@@ -8,7 +8,7 @@
 {% endblock %}
 
 {% block main_heading %}
-    NSLOOKUP
+    NsLookup
 {% endblock %}
 
 {% block body %}
@@ -28,16 +28,17 @@
         </div>
     </section>
 
-    {% if scanning_result %}
-        <section id="output-section">
-            <h2>Output Result</h2>
+
+    <section id="output-section">
+        <h2>Output Result</h2>
+        {% if scanning_result or error_message %}
             <div class="container">
                 <blockquote class="blockquote p-3 border border-primary rounded">
-                    <pre>{{ scanning_result }}</pre>
+                    <pre>{{ scanning_result | default:error_message }}</pre>
                 </blockquote>
             </div>
-        </section>
-    {% endif %}
+        {% endif %}
+    </section>
 {% endblock %}
 
 {% block script_js %}

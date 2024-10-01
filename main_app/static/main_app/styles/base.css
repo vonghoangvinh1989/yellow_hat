@@ -113,3 +113,7 @@ p {
     font-size: 18px;
     color: #080808;
 }
+
+.main-section {
+    min-height: 80vh; /* Set minimum height to 60% of the viewport height */
+}

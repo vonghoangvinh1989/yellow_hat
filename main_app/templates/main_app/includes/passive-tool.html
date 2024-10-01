@@ -1,5 +1,5 @@
 <li>
-    <a href="#" onclick="showSection('passive-recon')">Passive Recon</a>
+    <a href="{% url 'passive-recon' %}" onclick="showSection('passive-recon')">Passive Recon</a>
     <ul class="dropdown">
         {% for passive_item in passive_recon_tools %}
             <li><a href="{% url 'passive-recon-tools' passive_item.slug  %}">{{ passive_item.name | capfirst }}</a></li>
