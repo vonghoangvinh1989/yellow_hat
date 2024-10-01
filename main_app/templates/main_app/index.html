@@ -1,0 +1,70 @@
+{% extends 'main_app/base/base.html' %}
+
+{% load static %}
+
+{% block title %}Main Page{% endblock %}
+{% block site_css %}
+    <link rel="stylesheet" href="{% static 'main_app/styles/main_app.css' %}">
+{% endblock %}
+
+{% block main_heading %}
+    Yellow Hat Tools
+{% endblock %}
+
+{% block body %}
+    <!-- Home Section -->
+    <div id="home" class="section active">
+        <h1>Welcome to the Cybersecurity Toolkit</h1>
+        <p>This website is a comprehensive guide to some of the most widely used tools in cybersecurity, including tools for reconnaissance, exploitation, and post-exploitation phases.</p>
+        <h2>How to Use These Tools</h2>
+        <p>Each tool listed under the respective categories is designed for security professionals and researchers to test the security of networks and systems. Click on the categories in the navigation menu to explore relevant tools.</p>
+        <h2>Warning: Ethical Usage Only</h2>
+        <p><strong>Important Notice:</strong> The tools mentioned on this website should be used for legal and ethical purposes only. Unauthorized access to networks, systems, or data is illegal and unethical. Always ensure you have proper authorization before testing any systems. Misuse of these tools can result in legal consequences.</p>
+    </div>
+
+    <!-- Passive Recon Section -->
+    <div id="passive-recon" class="section">
+        <h1>Passive Recon</h1>
+        <p>Passive reconnaissance involves gathering information about the target without direct interaction.</p>
+    </div>
+
+    <!-- Active Recon Section -->
+    <div id="active-recon" class="section" style="display:none;">
+        <h1>Active Recon</h1>
+        <p>Active reconnaissance involves directly interacting with the target to gather information.</p>
+    </div>
+
+    <!-- Vulnerability Assessment Section -->
+    <div id="vulnerability-assessment" class="section" style="display:none;">
+        <h1>Vulnerability Assessment</h1>
+        <p>Vulnerability assessments identify weaknesses in systems.</p>
+    </div>
+
+    <!-- Enumeration Section -->
+    <div id="enumeration" class="section" style="display:none;">
+        <h1>Enumeration</h1>
+        <p>Enumeration involves extracting usernames, machine names, and network resources.</p>
+    </div>
+
+    <!-- Exploit Section -->
+    <div id="exploit" class="section" style="display:none;">
+        <h1>Exploit</h1>
+        <p>Exploitation involves taking advantage of system vulnerabilities.</p>
+    </div>
+
+    <!-- Post-Exploit Section -->
+    <div id="post-exploit" class="section" style="display:none;">
+        <h1>Post-Exploit</h1>
+        <p>Post-exploitation involves maintaining access or extracting sensitive data.</p>
+    </div>
+
+    <!-- Cover Tracks Section -->
+    <div id="cover-tracks" class="section" style="display:none;">
+        <h1>Cover Tracks</h1>
+        <p>Covering tracks is essential for hiding traces of an attack.</p>
+    </div>
+{% endblock %}
+
+{% block script_js %}
+    <script src="{% static 'main_app/scripts/main_app.js' %}"></script>
+{% endblock %}
