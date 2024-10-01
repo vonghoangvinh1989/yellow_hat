@@ -117,3 +117,17 @@ p {
 .main-section {
     min-height: 80vh; /* Set minimum height to 60% of the viewport height */
 }
+
+.banner {
+    position: relative;
+    background: url("{% static 'main_app/images/yellow_hat.jpeg' %}") no-repeat center center;
+    background-size: cover;
+    height: 50vh;
+    color: white;
+}
+
+.banner-content {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+}

@@ -30,8 +30,8 @@
 
 
     <section id="output-section">
-        <h2>Output Result</h2>
         {% if scanning_result or error_message %}
+            <h2>Output Result</h2>
             <div class="container">
                 <blockquote class="blockquote p-3 border border-primary rounded">
                     <pre>{{ scanning_result | default:error_message }}</pre>
