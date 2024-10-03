@@ -1,1 +1,2 @@
 NSLOOKUP = ["nslookup"]
+WHOIS = ["whois"]

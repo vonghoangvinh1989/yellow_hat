@@ -1,0 +1,44 @@
+{% extends 'main_app/base/base.html' %}
+
+{% load static %}
+
+{% block title %}WHOIS Tool Page{% endblock %}
+{% block site_css %}
+    <link rel="stylesheet" href="{% static 'passive_recon/styles/passive_recon.css' %}">
+{% endblock %}
+
+{% block main_heading %}
+    WHOIS
+{% endblock %}
+
+{% block body %}
+    <section>
+        <h2>Target</h2>
+        <div class="container">
+            <form id="scan-form" name="scan-form" method="POST" class="row align-items-center">
+                {% csrf_token %}
+                <div class="col-auto">
+                    <label for="domain" class="visually-hidden">Domain</label>
+                    <input type="text" class="form-control" name="domain" id="domain" placeholder="Domain">
+                </div>
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-primary">Scan</button>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <section id="output-section">
+        {% if scanning_result or error_message %}
+            <h2>Output Result</h2>
+            <div class="container">
+                <blockquote class="blockquote p-3 border border-primary rounded">
+                    <pre>{{ scanning_result | default:error_message }}</pre>
+                </blockquote>
+            </div>
+        {% endif %}
+    </section>
+{% endblock %}
+
+{% block script_js %}
+{% endblock %}
