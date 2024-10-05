@@ -2,7 +2,6 @@ from django.shortcuts import render
 from django.http import Http404, JsonResponse
 from .models import Tool
 from .utils import dnspython_utils, whois_utils
-from passive_recon.utils.passive_recon_tools import get_passive_recon_tools
 
 # constant variables
 from yellow_hat.constants import NSLOOKUP, WHOIS
@@ -10,11 +9,7 @@ from yellow_hat.constants import NSLOOKUP, WHOIS
 
 # Create your views here.
 def index(request):
-    return render(
-        request,
-        "passive_recon/index.html",
-        {"passive_recon_tools": get_passive_recon_tools()},
-    )
+    return render(request, "passive_recon/index.html")
 
 
 def passive_recon_tools(request, passive_tool_slug):
@@ -30,7 +25,6 @@ def passive_recon_tools(request, passive_tool_slug):
                     "passive_recon/nslookup.html",
                     {
                         "passive_tool": passive_tool,
-                        "passive_recon_tools": get_passive_recon_tools(),
                     },
                 )
             elif passive_tool_name in WHOIS:
@@ -39,7 +33,6 @@ def passive_recon_tools(request, passive_tool_slug):
                     "passive_recon/whois.html",
                     {
                         "passive_tool": passive_tool,
-                        "passive_recon_tools": get_passive_recon_tools(),
                     },
                 )
         elif request.method == "POST":

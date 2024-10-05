@@ -24,4 +24,5 @@ urlpatterns = [
     path("", RedirectView.as_view(url="/main")),
     path("main/", include("main_app.urls")),
     path("passive-recon/", include("passive_recon.urls")),
+    path("active-recon/", include("active_recon.urls")),
 ]

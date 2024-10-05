@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "main_app",
     "passive_recon",
+    "active_recon",
 ]
 
 MIDDLEWARE = [
@@ -64,6 +65,8 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                # adding custom context_processors to get all type of tools with all phases to use in views
+                "context_processors.common.common_context",
             ],
         },
     },

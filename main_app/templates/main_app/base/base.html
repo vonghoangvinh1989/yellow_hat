@@ -52,16 +52,10 @@
         <nav>
             <ul class="nav-menu">
                 <li><a href="/main" onclick="showSection('home')">Home</a></li>
-                {% include 'main_app/includes/passive-tool.html' with passive_recon_tools=passive_recon_tools %}
                 
-                <li>
-                    <a href="#" onclick="showSection('active-recon')">Active Recon</a>
-                    <ul class="dropdown">
-                        <li><a href="#">Nmap</a></li>
-                        <li><a href="#">Ping</a></li>
-                        <li><a href="#">Traceroute</a></li>
-                    </ul>
-                </li>
+                {% include 'main_app/includes/passive-tool.html' with passive_recon_tools=passive_recon_tools %}
+                {% include 'main_app/includes/active-tool.html' with active_recon_tools=active_recon_tools %}
+               
                 <li>
                     <a href="#" onclick="showSection('vulnerability-assessment')">Vulnerability Assessment</a>
                     <ul class="dropdown">

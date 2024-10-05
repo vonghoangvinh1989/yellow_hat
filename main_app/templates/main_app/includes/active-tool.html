@@ -1,0 +1,8 @@
+<li>
+    <a href="{% url 'active-recon' %}" onclick="showSection('active-recon')">Active Recon</a>
+    <ul class="dropdown">
+        {% for active_item in active_recon_tools %}
+            <li><a href="{% url 'active-recon-tools' active_item.slug  %}">{{ active_item.name | capfirst }}</a></li>
+        {% endfor %}
+    </ul>
+</li>

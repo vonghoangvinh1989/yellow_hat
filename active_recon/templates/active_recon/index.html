@@ -1,0 +1,21 @@
+{% extends 'main_app/base/base.html' %}
+{% load static %}
+
+{% block title %}Active Recon Page{% endblock %}
+{% block site_css %}
+{% endblock %}
+
+{% block main_heading %}
+    Active Recon
+{% endblock %}
+
+{% block body %}
+    <!-- Active Recon Section -->
+    <div id="active-recon">
+        <h1>What is active reconnaissance?</h1>
+        <p>Active reconnaissance is a type of computer attack in which an intruder engages with the targeted system to gather information about vulnerabilities. This may be through automated scanning or manual testing using various tools like ping, traceroute, netcat etc. This type of recon requires that attacker interact with the target. This recon is faster and more accurate, however it also makes much more noise. Since the attacker have to interact with the target to gain information, there’s an increased chance that the recon will get caught by a firewall or one of the network security devices. (Intrusion Detection Systems, network firewalls, etc.)</p>
+    </div>
+{% endblock %}
+
+{% block script_js %}
+{% endblock %}
