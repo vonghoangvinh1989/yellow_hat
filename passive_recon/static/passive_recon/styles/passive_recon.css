@@ -1,3 +1,11 @@
 #output-section {
     margin-top: 20px;
 }
+
+.progress-section {
+    margin-top: 20px;
+}
+
+.hidden {
+    display: none;
+}

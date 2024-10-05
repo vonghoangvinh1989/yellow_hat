@@ -1,0 +1,67 @@
+<script type="text/javascript">
+    $(document).ready(function() {
+        // get download button
+        let downloadButton = $('#download-button');
+
+        downloadButton.on('click', function() {
+                let element = document.getElementById('scanning-result');
+                let opt = {
+                    margin:       1,
+                    filename:     'scanning-result.pdf',
+                    image:        { type: 'jpeg', quality: 0.98 },
+                    html2canvas:  { scale: 2 },
+                    jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+                };
+
+                // New Promise-based usage:
+                html2pdf().set(opt).from(element).save();
+            });
+
+        $('#scan-form').on('submit', function(event) {
+            event.preventDefault();
+
+            // select result section
+            let outputSection = $('#output-section');
+            let scanningResult = $('#scanning-result');
+
+            // select scan button
+            let scanButton = $('#scan-button');
+            scanButton.prop('disabled', true);
+
+            // select progress
+            let progressSection = $('#progress-section');
+            progressSection.show();
+
+            let data = {
+                'domain': $('#domain').val(),
+                'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
+            };
+
+            $.ajax({
+                type: 'POST',
+                url: "{% url 'passive-recon-tools' passive_tool.slug %}",
+                data: data,
+                success: function(response) {
+                    if (response.error_message) {
+                        scanningResult.text(response.error_message);
+                    } else {
+                        scanningResult.text(response.scanning_result);
+                    }
+                    
+                    progressSection.hide();
+                    outputSection.show();
+                    scanButton.prop('disabled', false);
+                },
+                error: function(error) {
+                    // log error in console
+                    console.log('Error during scan: ', error);
+                    scanningResult.text('An error occurred during the scan. Please try again.');
+
+                    progressSection.hide();
+                    outputSection.show();
+                    scanButton.prop('disabled', false);
+                }
+            });
+        });
+    });
+</script>

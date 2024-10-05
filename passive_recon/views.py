@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import Http404
+from django.http import Http404, JsonResponse
 from .models import Tool
 from .utils import dnspython_utils, whois_utils
 from passive_recon.utils.passive_recon_tools import get_passive_recon_tools
@@ -20,6 +20,7 @@ def index(request):
 def passive_recon_tools(request, passive_tool_slug):
     passive_tool = Tool.objects.get(slug=passive_tool_slug)
     passive_tool_name = passive_tool.name.strip().lower()
+    target_domain = ""
 
     try:
         if request.method == "GET":
@@ -42,58 +43,51 @@ def passive_recon_tools(request, passive_tool_slug):
                     },
                 )
         elif request.method == "POST":
-            # clean post data
+            # clean variables from post form
             target_domain = request.POST.get("domain").strip().lower()
-            scanning_result = None
+
+            # set default values for error and response data
             error_message = None
+            response_data = None
+
+            # title for scanning result
+            title = ""
+
             if len(target_domain):
                 if passive_tool_name in NSLOOKUP:
+                    # set title
+                    title = "NSLOOKUP SCANNING RESULT\n"
+
                     try:
                         scanning_nslookup_result = dnspython_utils.scan_domain(
                             target_domain
                         )
-                    except Exception as error:
-                        error_message = error
+                    except Exception as err:
+                        error_message = str(err)
 
-                    return render(
-                        request,
-                        "passive_recon/nslookup.html",
-                        {
-                            "passive_tool": passive_tool,
-                            "passive_recon_tools": get_passive_recon_tools(),
-                            "scanning_result": scanning_nslookup_result,
-                            "error_message": error_message,
-                        },
-                    )
+                    response_data = {
+                        "scanning_result": f"{title} {scanning_nslookup_result}",
+                        "error_message": error_message,
+                    }
                 elif passive_tool_name in WHOIS:
-                    print(f"passive_tool_name is {passive_tool_name}")
-                    print(f"target domain is: {target_domain}")
+                    # set title
+                    title = "WHOIS SCANNING RESULT\n"
+
                     try:
                         scanning_whois_result = whois_utils.scan_whois(target_domain)
-                    except Exception as error:
-                        error_message = error
+                    except Exception as err:
+                        error_message = str(err)
 
-                    return render(
-                        request,
-                        "passive_recon/whois.html",
-                        {
-                            "passive_tool": passive_tool,
-                            "passive_recon_tools": get_passive_recon_tools(),
-                            "scanning_result": scanning_whois_result,
-                            "error_message": error_message,
-                        },
-                    )
-            else:
-                error_message = "Please enter a valid domain."
-                return render(
-                    request,
-                    "passive_recon/nslookup.html",
-                    {
-                        "passive_tool": passive_tool,
-                        "passive_recon_tools": get_passive_recon_tools(),
-                        "scanning_result": scanning_result,
+                    response_data = {
+                        "scanning_result": f"{title} {scanning_whois_result}",
                         "error_message": error_message,
-                    },
-                )
+                    }
+            else:
+                error_message = str("Please enter a valid domain.")
+                response_data = {
+                    "error_message": error_message,
+                }
+
+            return JsonResponse(response_data)
     except Tool.DoesNotExist:
         raise Http404("Passive Recon Tool does not exist")

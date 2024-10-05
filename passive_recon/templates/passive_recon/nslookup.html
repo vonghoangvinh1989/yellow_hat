@@ -12,34 +12,9 @@
 {% endblock %}
 
 {% block body %}
-    <section>
-        <h2>Target</h2>
-        <div class="container">
-            <form action="{% url 'passive-recon-tools' passive_tool.slug %}" method="POST" class="row align-items-center">
-                {% csrf_token %}
-                <div class="col-auto">
-                    <label for="domain" class="visually-hidden">Domain</label>
-                    <input type="text" class="form-control" name="domain" id="domain" placeholder="Domain">
-                </div>
-                <div class="col-auto">
-                    <button type="submit" class="btn btn-primary">Scan</button>
-                </div>
-            </form>
-        </div>
-    </section>
-
-
-    <section id="output-section">
-        {% if scanning_result or error_message %}
-            <h2>Output Result</h2>
-            <div class="container">
-                <blockquote class="blockquote p-3 border border-primary rounded">
-                    <pre>{{ scanning_result | default:error_message }}</pre>
-                </blockquote>
-            </div>
-        {% endif %}
-    </section>
+    {% include 'passive_recon/includes/form-partial.html' %}
 {% endblock %}
 
 {% block script_js %}
+    {% include 'passive_recon/includes/form-script.html' %}
 {% endblock %}
