@@ -52,9 +52,9 @@
         <nav>
             <ul class="nav-menu">
                 <li><a href="/main" onclick="showSection('home')">Home</a></li>
-                
-                {% include 'main_app/includes/passive-tool.html' with passive_recon_tools=passive_recon_tools %}
-                {% include 'main_app/includes/active-tool.html' with active_recon_tools=active_recon_tools %}
+
+                {% include 'main_app/includes/passive-tool.html' %}
+                {% include 'main_app/includes/active-tool.html' %}
                
                 <li>
                     <a href="#" onclick="showSection('vulnerability-assessment')">Vulnerability Assessment</a>
