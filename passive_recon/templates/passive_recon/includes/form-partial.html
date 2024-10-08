@@ -5,7 +5,7 @@
             {% csrf_token %}
             <div class="col-auto">
                 <label for="domain" class="visually-hidden">Domain</label>
-                <input type="text" class="form-control" name="domain" id="domain" placeholder="Domain">
+                <input type="text" class="form-control" name="domain" id="domain" placeholder="Domain" required>
             </div>
             <div class="col-auto">
                 <button id="scan-button" type="submit" class="btn btn-primary">Scan</button>
