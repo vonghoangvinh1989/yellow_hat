@@ -82,8 +82,15 @@ def active_recon_tools(request, active_tool_slug):
                     if scan_type == TOP_PORTS_SCAN:
                         try:
                             print("go here to calling nmap top port scan")
+
                             scanning_nmap_result = (
                                 python3_nmap_utils.nmap_top_ports_scan(target_domain)
+                                # testing nmap function here
+                                # python3_nmap_utils.scan_vulnerabilities_concurrent(
+                                #     target_domain,
+                                #     min_parallelism=10,
+                                #     max_parallelism=100,
+                                # )
                             )
                         except Exception as err:
                             print(f"error is: {err}")
