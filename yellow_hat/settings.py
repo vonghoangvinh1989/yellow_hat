@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     "main_app",
     "passive_recon",
     "active_recon",
+    "vulnerability_assessment",
 ]
 
 MIDDLEWARE = [
