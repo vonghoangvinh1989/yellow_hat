@@ -1,0 +1,41 @@
+<script>
+    function createNmapVersionDetectionResult(data) {
+        let table;
+
+        table = new Tabulator("#scanning-result", {
+            height: 400, // Set height of table
+            data: data, // Assign port data to Tabulator
+            layout: "fitColumns", // Fit columns to width of table
+            theme: "bootstrap4",
+            columns: [
+                    { title: "Port ID", field: "portid", width: 100 },
+                    { title: "Protocol", field: "protocol", width: 100 },
+                    { title: "State", field: "state", width: 100 },
+                    { title: "Reason", field: "reason", width: 150 },
+                    { title: "Service Name", field: "service.name", width: 150 },
+                    { title: "Service Product", field: "service.product", width: 150 },
+                    { title: "Service Version", field: "service.version", width: 150 },
+                    { title: "Service Extra Info", field: "service.extrainfo", width: 200 },
+                    { title: "Service OS Type", field: "service.ostype", width: 150 },
+                    {
+                        title: "CPE",
+                        field: "cpe",
+                        formatter: function(cell, formatterParams, onRendered) {
+                            const cpeArray = cell.getValue();
+                            return cpeArray && cpeArray.length > 0 ? cpeArray.map(cpe => cpe.cpe).join(", ") : "N/A";
+                        },
+                        width: 300,
+                    },
+                ],
+                responsiveLayout: "hide", // Hide columns that don't fit on the table
+                addRowPos: "top", // When adding a new row, add it to the top of the table
+                history: true, // Allow undo and redo actions on the table
+                movableColumns: true, // Allow column order to be changed
+                columnDefaults: {
+                    tooltip: true, // Show tooltips on cells
+                },
+        });
+
+        return table;
+    }
+</script>

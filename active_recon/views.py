@@ -53,6 +53,7 @@ def active_recon_tools(request, active_tool_slug):
             # title for scanning result
             # TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
             title = ""
+            scanning_nmap_result = None
 
             if not target_domain:
                 error_message = str("Please enter a valid domain name.")
@@ -79,32 +80,33 @@ def active_recon_tools(request, active_tool_slug):
                     # TODO TODO TODO TODO TODO
                     print("Go here mean correct scan type")
                     if scan_type == TOP_PORTS_SCAN:
-                        print("Go here mean choosing port scanning")
                         try:
                             print("go here to calling nmap top port scan")
-                            scanning_nnmap_result = (
+                            scanning_nmap_result = (
                                 python3_nmap_utils.nmap_top_ports_scan(target_domain)
                             )
                         except Exception as err:
+                            print(f"error is: {err}")
                             error_message = str(err)
 
-                        print("go here mean could be okay")
                         response_data = {
                             "scan_type": TOP_PORTS_SCAN,
-                            "scanning_result": scanning_nnmap_result,
+                            "scanning_result": scanning_nmap_result,
                             "error_message": error_message,
                         }
                     elif scan_type == VERSION_DETECTION_SCAN:
                         try:
-                            scanning_nnmap_result = (
+                            print(f"go here to calling nmap version detection scan")
+                            scanning_nmap_result = (
                                 python3_nmap_utils.nmap_version_detection(target_domain)
                             )
                         except Exception as err:
+                            print(f"error is: {err}")
                             error_message = str(err)
 
                         response_data = {
                             "scan_type": VERSION_DETECTION_SCAN,
-                            "scanning_result": scanning_nnmap_result,
+                            "scanning_result": scanning_nmap_result,
                             "error_message": error_message,
                         }
 

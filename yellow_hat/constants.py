@@ -36,10 +36,10 @@ NMAP_SCAN_TYPES = [
     #     "name": "OS Detection Scan",
     #     "value": OS_DETECTION_SCAN,
     # },
-    # {
-    #     "name": "Version Detection Scan",
-    #     "value": VERSION_DETECTION_SCAN,
-    # },
+    {
+        "name": "Version Detection Scan",
+        "value": VERSION_DETECTION_SCAN,
+    },
     {
         "name": "Top Ports Scan",
         "value": TOP_PORTS_SCAN,

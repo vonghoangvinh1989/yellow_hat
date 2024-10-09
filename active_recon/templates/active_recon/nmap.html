@@ -42,10 +42,6 @@
 
     <section class="hidden progress-section" id="progress-section">
         <div class="container">
-            <!-- <div class="progress">
-                <div id="progress-bar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 100%"></div>
-            </div> -->
-
             <div class="progress">
                 <div id="progress-bar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 100%">
                     <span class="progress-bar-text">It could take minutes to process. Please be patient...</span>
@@ -79,53 +75,13 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.core.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.3.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.13/jspdf.plugin.autotable.min.js"></script>
+
+    {% include 'active_recon/includes/nmap-top-port-scan-result-table.html' %}
+    {% include 'active_recon/includes/nmap-version-detection-scan-result-table.html' %}
+
     <script type="text/javascript">
         $(document).ready(function() {
-            let table;
-            
-            function createNmapPortScanResult(data) {
-                table = new Tabulator("#scanning-result", {
-                    height: 400, // Set height of table
-                    data: data, // Assign data to Tabulator
-                    layout: "fitColumns", // Fit columns to width of table
-                    theme: "bootstrap4",
-                    columns: [
-                        { title: "Port ID", field: "portid", width: 150 },
-                        { title: "Protocol", field: "protocol", width: 150 },
-                        { title: "State", field: "state", width: 150 },
-                        { title: "Reason", field: "reason", width: 150 },
-                        { title: "Service", field: "service", width: 150 },
-                    ],
-                    responsiveLayout:"hide",  //hide columns that don't fit on the table
-                    addRowPos:"top",          //when adding a new row, add it to the top of the table
-                    history:true,             //allow undo and redo actions on the table
-                    movableColumns:true,      //allow column order to be changed
-                    columnDefaults:{
-                        tooltip:true,         //show tool tips on cells
-                    },
-                });
-            }
-
-             // Download buttons
-            $('#download-csv').on('click', function() {
-                table.download("csv", "scanning-result.csv");
-            });
-
-            $('#download-json').on('click', function() {
-                table.download("json", "scanning-result.json");
-            });
-
-            $('#download-xlsx').on('click', function() {
-                table.download("xlsx", "scanning-result.xlsx", {sheetName:"My Data"});
-            });
-
-            $('#download-pdf').on('click', function() {
-                table.download("pdf", "scanning-result.pdf", {
-                    orientation:"portrait",
-                    title:"Scanning Result",
-                });
-            });
-
+            // handle form section
             $('#scan-form').on('submit', function(event) {
                 event.preventDefault();
 
@@ -161,10 +117,37 @@
                         if (response.error_message) {
                             scanningResult.text(response.error_message);
                         } else {
-                            // console.log(response.scanning_result.ports)
+                            // showing log 
+                            // console.log(response.scanning_result)
                             if(scanTypeValue === response.scan_type) {
-                                createNmapPortScanResult(response.scanning_result.ports);
-                            } 
+                                let nmaptable;
+
+                                if (response.scan_type == 'top_ports_scan') {
+                                    nmaptable = createNmapPortScanResult(response.scanning_result.ports);
+                                } else if(response.scan_type == 'version_detection_scan') {
+                                    nmaptable = createNmapVersionDetectionResult(response.scanning_result.ports);
+                                }
+
+                                // download button section
+                                $('#download-csv').on('click', function() {
+                                    nmaptable.download("csv", "scanning-result.csv");
+                                });
+
+                                $('#download-json').on('click', function() {
+                                    nmaptable.download("json", "scanning-result.json");
+                                });
+
+                                $('#download-xlsx').on('click', function() {
+                                    nmaptable.download("xlsx", "scanning-result.xlsx", {sheetName:"My Data"});
+                                });
+
+                                $('#download-pdf').on('click', function() {
+                                    nmaptable.download("pdf", "scanning-result.pdf", {
+                                        orientation:"portrait",
+                                        title:"Scanning Result",
+                                    });
+                                });
+                            }
                         }
                         
                         progressSection.hide();

@@ -1,0 +1,28 @@
+<script>
+    function createNmapPortScanResult(data) {
+        let table;
+
+        table = new Tabulator("#scanning-result", {
+            height: 400, // Set height of table
+            data: data, // Assign data to Tabulator
+            layout: "fitColumns", // Fit columns to width of table
+            theme: "bootstrap4",
+            columns: [
+                { title: "Port ID", field: "portid", width: 150 },
+                { title: "Protocol", field: "protocol", width: 150 },
+                { title: "State", field: "state", width: 150 },
+                { title: "Reason", field: "reason", width: 150 },
+                { title: "Service", field: "service", width: 150 },
+            ],
+            responsiveLayout:"hide",  //hide columns that don't fit on the table
+            addRowPos:"top",          //when adding a new row, add it to the top of the table
+            history:true,             //allow undo and redo actions on the table
+            movableColumns:true,      //allow column order to be changed
+            columnDefaults:{
+                tooltip:true,         //show tool tips on cells
+            },
+        });
+
+        return table;
+    }
+</script>
