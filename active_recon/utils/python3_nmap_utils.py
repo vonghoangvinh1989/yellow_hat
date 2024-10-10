@@ -1,9 +1,7 @@
 import socket
 import ipaddress
 import nmap3
-import nmap
 from yellow_hat.constants import NMAP_SCAN_TYPES
-from concurrent.futures import ThreadPoolExecutor, as_completed
 
 
 def convert_domain_or_ip(user_input):
@@ -23,65 +21,6 @@ def nmap_os_detection(host):
     nmap = nmap3.Nmap()
     result = nmap.nmap_os_detection(host)
     return result
-
-
-def nmap_scan(ip_address, scan_args):
-    """Function to perform a scan on a given IP address."""
-    nm = nmap.PortScanner()
-    nm.scan(ip_address, arguments=scan_args)
-    return nm
-
-
-def scan_vulnerabilities_concurrent(
-    host_domain, min_parallelism=10, max_parallelism=100
-):
-    # TODO: developing
-    """Scan the given host for vulnerabilities using Nmap with concurrency."""
-    print(f"Scanning {host_domain} for vulnerabilities")
-
-    # Convert domain to IP address if needed
-    ip_address = convert_domain_or_ip(host_domain)
-    if not ip_address:
-        raise Exception("Issue with the domain or target IP that user input")
-
-    # Define the arguments for the scan
-    scan_args = "-sV --script=vuln -T5"  # T4 for faster execution
-
-    # Add parallelism options if specified
-    if min_parallelism:
-        scan_args += f" --min-parallelism {min_parallelism}"
-    if max_parallelism:
-        scan_args += f" --max-parallelism {max_parallelism}"
-
-    # Perform the scan concurrently
-    with ThreadPoolExecutor(max_workers=20) as executor:
-        futures = [executor.submit(nmap_scan, ip_address, scan_args)]
-        results = []
-        for future in as_completed(futures):
-            nm = future.result()
-            if ip_address in nm.all_hosts():
-                for host in nm.all_hosts():
-                    host_info = {
-                        "host": host,
-                        "hostname": nm[host].hostname(),
-                        "state": nm[host].state(),
-                        "protocols": [],
-                    }
-                    for proto in nm[host].all_protocols():
-                        protocol_info = {"protocol": proto, "ports": []}
-                        lport = nm[host][proto].keys()
-                        for port in lport:
-                            port_info = {
-                                "port": port,
-                                "state": nm[host][proto][port]["state"],
-                                "scripts": nm[host][proto][port].get("script", {}),
-                            }
-                            protocol_info["ports"].append(port_info)
-                        host_info["protocols"].append(protocol_info)
-                    results.append(host_info)
-
-    print(f"result is {results}")
-    return results if results else None
 
 
 def nmap_dns_script_brute_force(host):
@@ -114,7 +53,7 @@ def nmap_version_detection(host, min_parallelism=10, max_parallelism=100):
         raise Exception("Issue with the domain or target ip that user input")
 
     # Define the arguments for the scan
-    scan_args = "-T5"
+    scan_args = "-T5 -Pn -n"
 
     # Add parallelism options if specified
     if min_parallelism:
@@ -181,7 +120,7 @@ def nmap_top_ports_scan(host, min_parallelism=10, max_parallelism=100):
         raise Exception("Issue with the domain or target ip that user input")
 
     # Define the arguments for the scan
-    scan_args = "-sV -T5"
+    scan_args = "-sS -T4 -Pn -n"
 
     # Add parallelism options if specified
     if min_parallelism:
