@@ -1,0 +1,8 @@
+<li>
+    <a href="{% url 'enumeration' %}" onclick="showSection('enumeration')">Enumeration</a>
+    <ul class="dropdown">
+        {% for enumeration_item in enumeration_tools %}
+            <li><a href="{% url 'enumeration-tools' enumeration_item.slug  %}">{{ enumeration_item.name | capfirst }}</a></li>
+        {% endfor %}
+    </ul>
+</li>

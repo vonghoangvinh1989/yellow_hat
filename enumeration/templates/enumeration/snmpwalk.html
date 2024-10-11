@@ -1,0 +1,113 @@
+{% extends 'main_app/base/base.html' %}
+
+{% load static %}
+
+{% block title %}SNMP Walk Tool Page{% endblock %}
+{% block site_css %}
+    <link rel="stylesheet" href="{% static 'enumeration/styles/enumeration.css' %}">
+{% endblock %}
+
+{% block main_heading %}
+    Enumeration with SNMP Walk
+{% endblock %}
+
+{% block body %}
+    <section>
+        <h2>Target</h2>
+        <div class="container">
+            <form id="scan-form" name="scan-form" method="POST" class="row align-items-center">
+                {% csrf_token %}
+                <div class="col-auto">
+                    <label for="domain" class="visually-hidden">Domain</label>
+                    <input type="text" class="form-control" name="domain" id="domain" placeholder="domain" required>
+                </div>
+                <div class="col-auto">
+                    <button id="scan-button" type="submit" class="btn btn-primary">Scan</button>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <section class="hidden progress-section" id="progress-section">
+        <div class="container">
+            <div class="progress">
+                <div id="progress-bar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 100%">
+                    <span class="progress-bar-text">It could take minutes to process. Please be patient...</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="hidden" id="output-section">
+        <div class="container">
+            <div class="row align-items-center mb-3">
+                <div class="col-auto">
+                    <h2 class="mb-0">Output Result</h2>
+                </div>
+            </div>
+            <blockquote class="blockquote p-3 border border-primary rounded">
+                <pre id="scanning-result"></pre>
+            </blockquote>
+        </div>
+    </section>
+{% endblock %}
+
+{% block script_js %}
+    <script type="text/javascript">
+        $(document).ready(function() {
+            // Handle form submission
+            $('#scan-form').on('submit', function(event) {
+                event.preventDefault();
+
+                // Select result section
+                let outputSection = $('#output-section');
+                let scanningResult = $('#scanning-result');
+
+                // Hide output section initially
+                outputSection.hide();
+
+                // Select scan button and disable it
+                let scanButton = $('#scan-button');
+                scanButton.prop('disabled', true);
+
+                // Show progress section
+                let progressSection = $('#progress-section');
+                progressSection.show();
+
+                // Prepare data for the request
+                let data = {
+                    'domain': $('#domain').val(),
+                    'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
+                };
+
+                $.ajax({
+                    type: 'POST',
+                    url: "{% url 'enumeration-tools' enumeration_tool.slug %}",
+                    data: data,
+                    success: function(response) {
+                        if (response.error_message) {
+                            scanningResult.text(response.error_message);
+                        } else {
+                            // TODO TODO TODO TODO TODO TODO TODO TODO
+                        }
+
+                        // Hide progress and show output section
+                        progressSection.hide();
+                        outputSection.show();
+                        scanButton.prop('disabled', false);
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        // Log error in console and display message
+                        console.log('AJAX Error:', textStatus, errorThrown);
+                        scanningResult.text(`An error occurred: ${errorThrown} during the scan.`);
+
+                        // Hide progress and show output section
+                        progressSection.hide();
+                        outputSection.show();
+                        scanButton.prop('disabled', false);
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}

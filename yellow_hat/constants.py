@@ -1,6 +1,7 @@
 NSLOOKUP = ["nslookup"]
 WHOIS = ["whois"]
 NMAP = ["nmap"]
+SNMP_WALK = ["snmpwalk"]
 
 UDP_SCAN = "udp_scan"
 TCP_SCAN = "tcp_scan"

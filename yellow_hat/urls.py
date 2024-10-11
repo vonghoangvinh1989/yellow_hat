@@ -26,4 +26,5 @@ urlpatterns = [
     path("passive-recon/", include("passive_recon.urls")),
     path("active-recon/", include("active_recon.urls")),
     path("vulnerability-assessment/", include("vulnerability_assessment.urls")),
+    path("enumeration/", include("enumeration.urls")),
 ]

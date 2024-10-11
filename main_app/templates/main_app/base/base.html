@@ -42,15 +42,8 @@
                 {% include 'main_app/includes/passive-tool.html' %}
                 {% include 'main_app/includes/active-tool.html' %}
                 {% include 'main_app/includes/vulnerability-tool.html' %}
-               
-                <li>
-                    <a href="#" onclick="showSection('enumeration')">Enumeration</a>
-                    <ul class="dropdown">
-                        <li><a href="#">NetBIOS</a></li>
-                        <li><a href="#">SNMPwalk</a></li>
-                        <li><a href="#">LDAP Enumeration</a></li>
-                    </ul>
-                </li>
+                {% include 'main_app/includes/enumeration-tool.html' %}
+                
                 <li>
                     <a href="#" onclick="showSection('exploit')">Exploit</a>
                     <ul class="dropdown">
