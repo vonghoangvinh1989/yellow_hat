@@ -1,0 +1,63 @@
+<script>
+    function transformDataForTabulator(apiResponse) {
+        const tabulatorData = [];
+        const emails = apiResponse.emails || [];
+
+        emails.forEach(emailInfo => {
+            const emailDetails = {
+                email: emailInfo.value,
+                firstName: emailInfo.first_name || '',
+                lastName: emailInfo.last_name || '',
+                position: emailInfo.position || '',
+                department: emailInfo.department || '',
+                seniority: emailInfo.seniority || '',
+                confidence: emailInfo.confidence || '',
+                verificationStatus: emailInfo.verification?.status || '',
+                verificationDate: emailInfo.verification?.date || '',
+                linkedin: emailInfo.linkedin || '',
+                sources: emailInfo.sources.map(source => source.uri).join(', '),
+                phoneNumber: emailInfo.phone_number || '',
+            };
+
+            tabulatorData.push(emailDetails);
+        });
+
+        return tabulatorData
+    }
+
+
+    // Function to initialize the Tabulator table
+    function initializeEmailTable(records) {
+        let table = new Tabulator("#email-finder-table", {
+                data: records, // Set data
+                layout: "fitColumns", // Fit columns to width of table
+                theme: "bootstrap4", // Set the theme
+                columns: [
+                    { title: "Email", field: "email", headerFilter: "input", headerFilterPlaceholder: "search email" },
+                    { title: "First Name", field: "firstName", headerFilter: "input", headerFilterPlaceholder: "search first name" },
+                    { title: "Last Name", field: "lastName", headerFilter: "input", headerFilterPlaceholder: "search last name" },
+                    { title: "Position", field: "position", headerFilter: "input", headerFilterPlaceholder: "search position" },
+                    { title: "Department", field: "department", headerFilter: "input", headerFilterPlaceholder: "search department" },
+                    { title: "Seniority", field: "seniority", headerFilter: "input", headerFilterPlaceholder: "search seniority" },
+                    { title: "Confidence", field: "confidence" },
+                    { title: "Verification Status", field: "verificationStatus", headerFilter: "input", headerFilterPlaceholder: "search verification status" },
+                    { title: "Verification Date", field: "verificationDate" },
+                    { title: "LinkedIn", field: "linkedin", formatter: "link", formatterParams: { labelField: "linkedin" } },
+                    { title: "Sources", field: "sources" },
+                    { title: "Phone Number", field: "phoneNumber" },
+                ],
+                pagination: "local", // Enable local pagination
+                paginationSize: 15, // Number of rows per page
+                movableColumns: true, // Allow dragging columns
+                resizableRows: true, // Allow row resizing
+                responsiveLayout: "hide", // Hide columns that don't fit on the table
+                addRowPos: "top", // When adding a new row, add it to the top of the table
+                history: true, // Allow undo and redo actions on the table
+                columnDefaults: {
+                tooltip: true, // Show tooltips on cells
+            },
+        });
+
+        return table;
+    }
+</script>

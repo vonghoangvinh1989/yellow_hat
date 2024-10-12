@@ -2,17 +2,17 @@
 
 {% load static %}
 
-{% block title %}NMAP Tool Page{% endblock %}
+{% block title %}Email Finder Tool Page{% endblock %}
 {% block site_css %}
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tabulator/4.9.3/css/bootstrap/tabulator_bootstrap4.min.css" rel="stylesheet">
     <link href="https://unpkg.com/tabulator-tables/dist/css/tabulator.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'passive_recon/styles/passive_recon.css' %}">
-    <link rel="stylesheet" href="{% static 'vulnerability_assessment/styles/vulnerability_assessment.css' %}">
-    <link rel="stylesheet" href="{% static 'vulnerability_assessment/styles/nmap.css' %}">
+    <link rel="stylesheet" href="{% static 'enumeration/styles/enumeration.css' %}">
+    <link rel="stylesheet" href="{% static 'enumeration/styles/emailfinder.css' %}">
 {% endblock %}
 
 {% block main_heading %}
-    Vulnerability Assessment with Nmap
+    Enumeration with Email Finder of Hunter.IO
 {% endblock %}
 
 {% block body %}
@@ -24,17 +24,6 @@
                 <div class="col-auto">
                     <label for="domain" class="visually-hidden">Domain</label>
                     <input type="text" class="form-control" name="domain" id="domain" placeholder="domain" required>
-                </div>
-                <div class="col-auto">
-                    <label for="port-range" class="visually-hidden">Port Range</label>
-                    <input type="text" class="form-control" name="port-range" id="port-range" placeholder="1-1024 or 22,80,443,..." required>
-                </div>
-                <div class="col-auto">
-                    <label for="script-type" class="visually-hidden">Nmap Script</label>
-                    <select class="form-control" name="script-type" id="script-type" required>
-                        <option value="vulners" selected>vulners</option>
-                        <option value="vuln">vuln</option>
-                    </select>
                 </div>
                 <div class="col-auto">
                     <button id="scan-button" type="submit" class="btn btn-primary">Scan</button>
@@ -64,11 +53,10 @@
                 <button id="download-csv" class="btn btn-secondary">Download CSV</button>
                 <button id="download-json" class="btn btn-secondary">Download JSON</button>
                 <button id="download-xlsx" class="btn btn-secondary">Download XLSX</button>
-                <button id="download-pdf" class="btn btn-secondary">Download PDF</button>
             </div>
             <blockquote class="blockquote p-3 border border-primary rounded">
                 <pre id="scanning-result"></pre>
-                <div id="vulnerability-table"></div>
+                <div id="email-finder-table"></div>
             </blockquote>
         </div>
     </section>
@@ -80,9 +68,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.3.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.13/jspdf.plugin.autotable.min.js"></script>
 
-    {% include 'vulnerability_assessment/includes/nmap-vulnerability-assessment-result-table.html' %}
+    {% include 'enumeration/includes/email-finder-table.html' %}
 
-    <script type="text/javascript">
+    <script>
         $(document).ready(function() {
             // Handle form submission
             $('#scan-form').on('submit', function(event) {
@@ -91,10 +79,11 @@
                 // Select result section
                 let outputSection = $('#output-section');
                 let scanningResult = $('#scanning-result');
-                let vulnerabilityTable = $('#vulnerability-table');
+
+                let emailFinderTable = $('#email-finder-table');
                 
                 // Hide table
-                vulnerabilityTable.hide();
+                emailFinderTable.hide();
 
                 // Hide output section initially
                 outputSection.hide();
@@ -110,50 +99,38 @@
                 // Prepare data for the request
                 let data = {
                     'domain': $('#domain').val(),
-                    'port_range': $('#port-range').val(),
-                    'script_type': $('#script-type').val(),
                     'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
                 };
 
                 $.ajax({
                     type: 'POST',
-                    url: "{% url 'vulnerability-assessment-tools' vulnerability_tool.slug %}",
+                    url: "{% url 'enumeration-tools' enumeration_tool.slug %}",
                     data: data,
                     success: function(response) {
                         if (response.error_message) {
                             scanningResult.text(response.error_message);
                         } else {
-                            // Log the response and generate results table
-                            // console.log(JSON.stringify(response.scanning_result));
+                            // console.log(JSON.stringify(response.scanning_result))
                             const data = response.scanning_result;
                             
-                            // Call transformData to prepare records
-                            let records = transformData(data);
-                            
-                            // define table
-                            let nmaptable = initializeTable(records);
+                            let records = transformDataForTabulator(data);
+
+                            let table = initializeEmailTable(records);
                             
                             // show table
-                            vulnerabilityTable.show();
+                            emailFinderTable.show();
 
                             // download button section
                             $('#download-csv').on('click', function() {
-                                nmaptable.download("csv", "vulnerability-scanning-result.csv");
+                                table.download("csv", "email-scanning-result.csv");
                             });
 
                             $('#download-json').on('click', function() {
-                                nmaptable.download("json", "vulnerability-scanning-result.json");
+                                table.download("json", "email-scanning-result.json");
                             });
 
                             $('#download-xlsx').on('click', function() {
-                                nmaptable.download("xlsx", "vulnerability-scanning-result.xlsx", {sheetName:"My Data"});
-                            });
-
-                            $('#download-pdf').on('click', function() {
-                                nmaptable.download("pdf", "vulnerability-scanning-result.pdf", {
-                                    orientation:"landscape",
-                                    title:"Vulnerability Assessment Scanning Result",
-                                });
+                                table.download("xlsx", "email-scanning-result.xlsx", {sheetName:"My Data"});
                             });
                         }
 

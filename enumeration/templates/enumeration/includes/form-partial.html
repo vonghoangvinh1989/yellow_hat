@@ -1,0 +1,38 @@
+<section>
+    <h2>Target</h2>
+    <div class="container">
+        <form id="scan-form" name="scan-form" method="POST" class="row align-items-center">
+            {% csrf_token %}
+            <div class="col-auto">
+                <label for="domain" class="visually-hidden">Domain</label>
+                <input type="text" class="form-control" name="domain" id="domain" placeholder="domain" required>
+            </div>
+            <div class="col-auto">
+                <button id="scan-button" type="submit" class="btn btn-primary">Scan</button>
+            </div>
+        </form>
+    </div>
+</section>
+
+<section class="hidden progress-section" id="progress-section">
+    <div class="container">
+        <div class="progress">
+            <div id="progress-bar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 100%">
+                <span class="progress-bar-text">It could take minutes to process. Please be patient...</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="hidden" id="output-section">
+    <div class="container">
+        <div class="row align-items-center mb-3">
+            <div class="col-auto">
+                <h2 class="mb-0">Output Result</h2>
+            </div>
+        </div>
+        <blockquote class="blockquote p-3 border border-primary rounded">
+            <pre id="scanning-result"></pre>
+        </blockquote>
+    </div>
+</section>

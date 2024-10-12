@@ -1,0 +1,57 @@
+<script type="text/javascript">
+    $(document).ready(function() {
+        // Handle form submission
+        $('#scan-form').on('submit', function(event) {
+            event.preventDefault();
+
+            // Select result section
+            let outputSection = $('#output-section');
+            let scanningResult = $('#scanning-result');
+
+            // Hide output section initially
+            outputSection.hide();
+
+            // Select scan button and disable it
+            let scanButton = $('#scan-button');
+            scanButton.prop('disabled', true);
+
+            // Show progress section
+            let progressSection = $('#progress-section');
+            progressSection.show();
+
+            // Prepare data for the request
+            let data = {
+                'domain': $('#domain').val(),
+                'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
+            };
+
+            $.ajax({
+                type: 'POST',
+                url: "{% url 'enumeration-tools' enumeration_tool.slug %}",
+                data: data,
+                success: function(response) {
+                    if (response.error_message) {
+                        scanningResult.text(response.error_message);
+                    } else {
+                        scanningResult.text(response.scanning_result);
+                    }
+
+                    // Hide progress and show output section
+                    progressSection.hide();
+                    outputSection.show();
+                    scanButton.prop('disabled', false);
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    // Log error in console and display message
+                    console.log('AJAX Error:', textStatus, errorThrown);
+                    scanningResult.text(`An error occurred: ${errorThrown} during the scan.`);
+
+                    // Hide progress and show output section
+                    progressSection.hide();
+                    outputSection.show();
+                    scanButton.prop('disabled', false);
+                }
+            });
+        });
+    });
+</script>

@@ -1,0 +1,25 @@
+<script>
+    function initializeTable(records) {
+        let table = new Tabulator("#subdomain-table", {
+            data: records, // Set data
+            layout: "fitColumns", // Fit columns to width of table
+            theme: "bootstrap4",
+            columns: [
+                {title: "SubDomain", field: "subdomain", width: 400, headerFilter: "input", headerFilterPlaceholder: "search subdomain"},
+                {title: "IP Address", field: "ip_address", width: 400, headerFilter: "input", headerFilterPlaceholder: "search IP address"}
+            ],
+            pagination: "local", // Enable local pagination
+            paginationSize: 10, // Number of rows per page
+            movableColumns: true, // Allow dragging columns
+            resizableRows: true, // Allow row resizing
+            responsiveLayout: "hide", // Hide columns that don't fit on the table
+            addRowPos: "top", // When adding a new row, add it to the top of the table
+            history: true, // Allow undo and redo actions on the table
+            columnDefaults: {
+                tooltip: true, // Show tooltips on cells
+            },
+        });
+
+        return table;
+    }
+</script>
