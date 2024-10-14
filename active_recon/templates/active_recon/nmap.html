@@ -56,15 +56,19 @@
                 <div class="col-auto">
                     <h2 class="mb-0">Output Result</h2>
                 </div>
-                <div class="col-auto">
+                <!-- <div class="col-auto">
                     <button id="download-csv" class="btn btn-secondary">Download CSV</button>
                     <button id="download-json" class="btn btn-secondary">Download JSON</button>
                     <button id="download-xlsx" class="btn btn-secondary">Download XLSX</button>
                     <button id="download-pdf" class="btn btn-secondary">Download PDF</button>
+                </div> -->
+                <div class="col-auto">
+                    <button id="save-report-button" class="btn btn-success">Download & Save Report</button>
                 </div>
             </div>
             <blockquote class="blockquote p-3 border border-primary rounded">
                 <div id="scanning-result"></div>
+                <div id="report-result"></div>
             </blockquote>
         </div>
     </section>
@@ -78,6 +82,7 @@
 
     {% include 'active_recon/includes/nmap-top-port-scan-result-table.html' %}
     {% include 'active_recon/includes/nmap-version-detection-scan-result-table.html' %}
+    {% include 'report/includes/report-name.html' %}
 
     <script type="text/javascript">
         $(document).ready(function() {
@@ -121,6 +126,7 @@
                             // console.log(response.scanning_result)
                             if(scanTypeValue === response.scan_type) {
                                 let nmaptable;
+                                let reportTable;
 
                                 if (response.scan_type == 'top_ports_scan') {
                                     nmaptable = createNmapPortScanResult(response.scanning_result.ports);
@@ -128,25 +134,52 @@
                                     nmaptable = createNmapVersionDetectionResult(response.scanning_result.ports);
                                 }
 
-                                // download button section
-                                $('#download-csv').on('click', function() {
-                                    nmaptable.download("csv", "scanning-result.csv");
+                                // // download button section
+                                // $('#download-csv').on('click', function() {
+                                //     nmaptable.download("csv", "scanning-result.csv");
+                                // });
+
+                                // $('#download-json').on('click', function() {
+                                //     nmaptable.download("json", "scanning-result.json");
+                                // });
+
+                                // $('#download-xlsx').on('click', function() {
+                                //     nmaptable.download("xlsx", "scanning-result.xlsx", {sheetName:"My Data"});
+                                // });
+
+                                // $('#download-pdf').on('click', function() {
+                                //     nmaptable.download("pdf", "scanning-result.pdf", {
+                                //         orientation:"portrait",
+                                //         title:"Scanning Result",
+                                //     });
+                                // });
+
+                                // SAVE REPORT SECTION
+                                // select save report button
+                                let saveReportButton = $('#save-report-button');
+
+                                // get the passive tool name from backend
+                                let activeToolName = "{{ active_tool.name }}";
+
+                                // generate report pdf file name
+                                let pdfReportFileName = generateReportName(activeToolName)
+
+                                // generate pop-up
+                                let successPopUp = new Popup({
+                                    id: `${pdfReportFileName}`,
+                                    title: "Report Saved Successfully",
+                                    content: `A file with name <strong>${pdfReportFileName}.pdf</strong> was generated successfully.`,
                                 });
 
-                                $('#download-json').on('click', function() {
-                                    nmaptable.download("json", "scanning-result.json");
-                                });
-
-                                $('#download-xlsx').on('click', function() {
-                                    nmaptable.download("xlsx", "scanning-result.xlsx", {sheetName:"My Data"});
-                                });
-
-                                $('#download-pdf').on('click', function() {
-                                    nmaptable.download("pdf", "scanning-result.pdf", {
-                                        orientation:"portrait",
-                                        title:"Scanning Result",
+                                // handle save repport button
+                                saveReportButton.on('click', function() {
+                                    // Use getPdf to generate PDF data
+                                    nmaptable.download("pdf", `${pdfReportFileName}.pdf`, {
+                                        orientation: "portrait",
+                                        title: "My Table Data",
+                                        jsPDF: {unit: 'in', format: 'letter', orientation: 'portrait'}
                                     });
-                                });
+                                }); // end save button
                             }
                         }
                         

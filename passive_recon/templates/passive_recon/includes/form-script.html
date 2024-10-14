@@ -1,21 +1,78 @@
+{% include 'report/includes/report-name.html' %}
+
 <script type="text/javascript">
     $(document).ready(function() {
-        // get download button
+        // select download button
         let downloadButton = $('#download-button');
 
-        downloadButton.on('click', function() {
-                let element = document.getElementById('scanning-result');
-                let opt = {
-                    margin:       1,
-                    filename:     'scanning-result.pdf',
-                    image:        { type: 'jpeg', quality: 0.98 },
-                    html2canvas:  { scale: 2 },
-                    jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
-                };
+        // select save report button
+        let saveReportButton = $('#save-report-button');
 
-                // New Promise-based usage:
-                html2pdf().set(opt).from(element).save();
+        // get the passive tool name from backend
+        let passiveToolName = "{{ passive_tool.name }}";
+
+        // generate report pdf file name
+        let pdfReportFileName = generateReportName(passiveToolName)
+
+        // handle for download button
+        downloadButton.on('click', function() {
+            let element = document.getElementById('scanning-result');
+            let opt = {
+                margin:       1,
+                filename:     `${pdfReportFileName}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2 },
+                jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+
+            // New Promise-based usage:
+            html2pdf().set(opt).from(element).save();
+        });
+
+        // generate pop-up
+        let successPopUp = new Popup({
+            id: `${pdfReportFileName}`,
+            title: "Report Saved Successfully",
+            content: `A file with name <strong>${pdfReportFileName}.pdf</strong> was generated successfully.`,
+        });
+
+
+        // handle save repport button
+        saveReportButton.on('click', function() {
+            let element = document.getElementById('scanning-result');
+            let opt = {
+                margin:       1,
+                filename:     `${pdfReportFileName}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2 },
+                jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+
+            html2pdf().set(opt).from(element).output('blob').then(function(pdfBlob) {
+                let formData = new FormData();
+                formData.append('pdf', pdfBlob, `${pdfReportFileName}.pdf`);
+                formData.append('csrfmiddlewaretoken', $('input[name=csrfmiddlewaretoken]').val());
+
+                $.ajax({
+                    type: 'POST',
+                    url: "{% url 'save-report' %}",
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(response, textStatus, jqXHR) {
+                        if (jqXHR.status === 200) {
+                            successPopUp.show(); // Show success popup
+                        } else {
+                            alert('Error saving PDF file');
+                        }
+                    },
+                    error: function(error) {
+                        console.log('Error during saving report: ', error);
+                        alert('An error occurred while saving the report. Please try again.');
+                    }
+                });
             });
+        });
 
         $('#scan-form').on('submit', function(event) {
             event.preventDefault();

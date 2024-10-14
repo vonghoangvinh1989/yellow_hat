@@ -71,7 +71,7 @@ def enumeration_tools(request, enumeration_tool_slug):
 
                     if not scanning_snmp_result:
                         response_data = {
-                            "scanning_result": "No result found.",
+                            "error_message": "No result found.",
                         }
 
                         return JsonResponse(response_data, safe=False)
@@ -92,7 +92,7 @@ def enumeration_tools(request, enumeration_tool_slug):
 
                     if not scanning_subdomain_result:
                         response_data = {
-                            "scanning_result": "No result found.",
+                            "error_message": "No result found.",
                         }
 
                         return JsonResponse(response_data, safe=False)
@@ -111,7 +111,7 @@ def enumeration_tools(request, enumeration_tool_slug):
 
                     if not scanning_email_result:
                         response_data = {
-                            "scanning_result": "No result found.",
+                            "error_message": "No result found.",
                         }
 
                         return JsonResponse(response_data, safe=False)
