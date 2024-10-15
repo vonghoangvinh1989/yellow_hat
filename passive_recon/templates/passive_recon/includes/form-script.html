@@ -9,7 +9,7 @@
         let saveReportButton = $('#save-report-button');
 
         // get the passive tool name from backend
-        let passiveToolName = "{{ passive_tool.name }}";
+        let passiveToolName = `passive_recon_{{ passive_tool.name }}`;
 
         // generate report pdf file name
         let pdfReportFileName = generateReportName(passiveToolName)

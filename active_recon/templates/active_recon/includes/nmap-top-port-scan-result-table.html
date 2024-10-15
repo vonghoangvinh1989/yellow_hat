@@ -5,7 +5,7 @@
 
         table = new Tabulator("#scanning-result", {
             downloadEncoder:function(fileContents, mimeType){
-                let blob = new Blob([combinedContents], { type: mimeType });
+                let blob = new Blob([fileContents], { type: mimeType });
 
                 // Check if the save report button was clicked
                 if (isSaveReportButtonClicked) {

@@ -140,7 +140,7 @@
                                 }
                                 
                                 // get the passive tool name from backend
-                                let activeToolName = "{{ active_tool.name }}";
+                                let activeToolName = `active_recon_{{ active_tool.name }}`;
 
                                 // generate report pdf file name
                                 let pdfReportFileName = generateReportName(activeToolName)
