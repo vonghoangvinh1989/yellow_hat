@@ -1,6 +1,18 @@
 <script>
     function initializeTable(records) {
         let table = new Tabulator("#subdomain-table", {
+            downloadEncoder:function(fileContents, mimeType){
+                let blob = new Blob([fileContents], { type: mimeType });
+
+                // Check if the save report button was clicked
+                if (isSaveReportButtonClicked) {
+                    // Send the Blob to the server
+                    savePdfToServer(blob);
+                    return false;
+                }
+
+                return new Blob([fileContents], {type:mimeType});
+            },
             data: records, // Set data
             layout: "fitColumns", // Fit columns to width of table
             theme: "bootstrap4",

@@ -15,7 +15,7 @@
                 verificationStatus: emailInfo.verification?.status || '',
                 verificationDate: emailInfo.verification?.date || '',
                 linkedin: emailInfo.linkedin || '',
-                sources: emailInfo.sources.map(source => source.uri).join(', '),
+                // sources: emailInfo.sources.map(source => source.uri).join(', '),
                 phoneNumber: emailInfo.phone_number || '',
             };
 
@@ -29,22 +29,34 @@
     // Function to initialize the Tabulator table
     function initializeEmailTable(records) {
         let table = new Tabulator("#email-finder-table", {
+                downloadEncoder:function(fileContents, mimeType){
+                    let blob = new Blob([fileContents], { type: mimeType });
+
+                    // Check if the save report button was clicked
+                    if (isSaveReportButtonClicked) {
+                        // Send the Blob to the server
+                        savePdfToServer(blob);
+                        return false;
+                    }
+
+                    return new Blob([fileContents], {type:mimeType});
+                },
                 data: records, // Set data
                 layout: "fitColumns", // Fit columns to width of table
                 theme: "bootstrap4", // Set the theme
                 columns: [
-                    { title: "Email", field: "email", headerFilter: "input", headerFilterPlaceholder: "search email" },
-                    { title: "First Name", field: "firstName", headerFilter: "input", headerFilterPlaceholder: "search first name" },
-                    { title: "Last Name", field: "lastName", headerFilter: "input", headerFilterPlaceholder: "search last name" },
-                    { title: "Position", field: "position", headerFilter: "input", headerFilterPlaceholder: "search position" },
-                    { title: "Department", field: "department", headerFilter: "input", headerFilterPlaceholder: "search department" },
-                    { title: "Seniority", field: "seniority", headerFilter: "input", headerFilterPlaceholder: "search seniority" },
-                    { title: "Confidence", field: "confidence" },
-                    { title: "Verification Status", field: "verificationStatus", headerFilter: "input", headerFilterPlaceholder: "search verification status" },
-                    { title: "Verification Date", field: "verificationDate" },
+                    { title: "Email", field: "email", width: 100, headerFilter: "input", headerFilterPlaceholder: "search email" },
+                    { title: "First Name", field: "firstName", width:100, headerFilter: "input", headerFilterPlaceholder: "search first name" },
+                    { title: "Last Name", field: "lastName", width:100, headerFilter: "input", headerFilterPlaceholder: "search last name" },
+                    { title: "Position", field: "position", width:100, headerFilter: "input", headerFilterPlaceholder: "search position" },
+                    { title: "Department", field: "department", width:100, headerFilter: "input", headerFilterPlaceholder: "search department" },
+                    { title: "Seniority", field: "seniority", width: 100, headerFilter: "input", headerFilterPlaceholder: "search seniority" },
+                    { title: "Confidence", field: "confidence", width: 100 },
+                    { title: "Verification Status", field: "verificationStatus", width: 100, headerFilter: "input", headerFilterPlaceholder: "search verification status" },
+                    { title: "Verification Date", field: "verificationDate", width: 100 },
                     { title: "LinkedIn", field: "linkedin", formatter: "link", formatterParams: { labelField: "linkedin" } },
-                    { title: "Sources", field: "sources" },
-                    { title: "Phone Number", field: "phoneNumber" },
+                    // { title: "Sources", field: "sources", width: 100 },
+                    { title: "Phone Number", field: "phoneNumber", width: 100 },
                 ],
                 pagination: "local", // Enable local pagination
                 paginationSize: 15, // Number of rows per page

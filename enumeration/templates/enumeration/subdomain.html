@@ -54,6 +54,7 @@
                 <button id="download-json" class="btn btn-secondary">Download JSON</button>
                 <button id="download-xlsx" class="btn btn-secondary">Download XLSX</button>
                 <button id="download-pdf" class="btn btn-secondary">Download PDF</button>
+                <button id="save-report-button" class="btn btn-success">Save Report</button>
             </div>
             <blockquote class="blockquote p-3 border border-primary rounded">
                 <pre id="scanning-result"></pre>
@@ -69,7 +70,13 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.3.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.13/jspdf.plugin.autotable.min.js"></script>
 
+    <script>
+        // Variable to track if the save report button was clicked
+        let isSaveReportButtonClicked = false;
+    </script>
+
     {% include 'enumeration/includes/subdomain-table.html' %}
+    {% include 'enumeration/includes/save-report-table.html' %}
 
     <script>
         $(document).ready(function() {
@@ -97,9 +104,12 @@
                 let progressSection = $('#progress-section');
                 progressSection.show();
 
+                // value of input domain
+                let inputDomainValue = $('#domain').val();
+
                 // Prepare data for the request
                 let data = {
-                    'domain': $('#domain').val(),
+                    'domain': inputDomainValue,
                     'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
                 };
 
@@ -116,28 +126,54 @@
                             // define table
                             let table = initializeTable(data);
                             
+                            // get the enumeration tool name from backend
+                            let enumerationToolName = "enumeration_{{ enumeration_tool.name }}";
+
+                            // generate report pdf file name
+                            let pdfReportFileName = generateReportName(enumerationToolName);
+
                             // show table
                             subdomainTable.show();
 
                             // download button section
                             $('#download-csv').on('click', function() {
-                                table.download("csv", "subdomain-scanning-result.csv");
+                                table.download("csv", `${pdfReportFileName}.csv`);
                             });
 
                             $('#download-json').on('click', function() {
-                                table.download("json", "subdomain-scanning-result.json");
+                                table.download("json", `${pdfReportFileName}.json`);
                             });
 
                             $('#download-xlsx').on('click', function() {
-                                table.download("xlsx", "subdomain-scanning-result.xlsx", {sheetName:"My Data"});
+                                table.download("xlsx", `${pdfReportFileName}.xlsx`, {sheetName:"My Data"});
                             });
 
                             $('#download-pdf').on('click', function() {
-                                table.download("pdf", "subdomain-scanning-result.pdf", {
+                                table.download("pdf", `${pdfReportFileName}.pdf`, {
                                     orientation:"portrait",
-                                    title:"Subdomain Scanning Result",
+                                    title:`Target Domain: ${inputDomainValue}`,
                                 });
                             });
+
+                            // SAVE REPORT SECTION
+                            let saveReportButton = $('#save-report-button');
+
+                            // handle save repport button
+                            saveReportButton.on('click', function() {
+                                // Set the flag to true when the button is clicked
+                                isSaveReportButtonClicked = true;
+
+                                // Use download to trigger the PDF download
+                                table.download("pdf", `${pdfReportFileName}.pdf`, {
+                                    orientation:"landscape",
+                                    title:`Target Domain: ${inputDomainValue}`,
+                                });
+
+                                // Optionally, reset the flag after the download process starts
+                                setTimeout(() => {
+                                    isSaveReportButtonClicked = false; // Reset after a delay (if needed)
+                                }, 1000); // Adjust the delay as necessary
+                            }); // end save button
                         }
 
                         // Hide progress and show output section
