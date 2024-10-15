@@ -15,6 +15,13 @@
         <h1>What is a cybersecurity report?</h1>
         <p>A cybersecurity report presents critical information about cybersecurity threats, risks within a digital ecosystem, gaps in security controls, and how a security program performs. Cybersecurity reports help to foster data-driven communication between boards, executives, security practitioners, and security and risks leaders to ensure that all parties are working together to enhance security programs and mitigate risk.</p>
     </div>
+
+    <h1>Available Reports</h1>
+    <ul>
+        {% for report in report_files %}
+            <li><a href="{{ media_url }}{{ report }}" download>{{ report }}</a></li>
+        {% endfor %}
+    </ul>
 {% endblock %}
 
 {% block script_js %}

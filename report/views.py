@@ -8,12 +8,32 @@ import os
 
 # Create your views here.
 def index(request):
-    return render(request, "report/index.html")
+    if request.method == "GET":
+        print("Go to function index of reporting")
+        # Path to the report directory
+        report_directory = os.path.join(settings.MEDIA_ROOT)
+
+        # List all files in the report directory
+        report_files = []
+        if os.path.exists(report_directory):
+            report_files = os.listdir(report_directory)
+            report_files = [
+                f
+                for f in report_files
+                if os.path.isfile(os.path.join(report_directory, f))
+            ]
+
+        # Pass the list of files to the template
+        context = {
+            "report_files": report_files,
+            "media_url": settings.MEDIA_URL,
+        }
+
+    return render(request, "report/index.html", context)
 
 
 @csrf_exempt
 def save_report(request):
-    print("Go to function save_report in backend")
     if request.method == "POST":
         file_type = request.POST.get("file_type", "").strip().lower()
         table_from = request.POST.get("table_from", "").strip().lower()
