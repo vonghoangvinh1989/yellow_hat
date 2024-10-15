@@ -13,19 +13,32 @@ def index(request):
         # Path to the report directory
         report_directory = os.path.join(settings.MEDIA_ROOT)
 
-        # List all files in the report directory
-        report_files = []
+        # Initialize categories
+        categories = {
+            "Passive Reconnaissance Reports": [],
+            "Active Reconnaissance Reports": [],
+            "Vulnerability Assessment Reports": [],
+            "Enumeration Reports": [],
+        }
+
         if os.path.exists(report_directory):
             report_files = os.listdir(report_directory)
-            report_files = [
-                f
-                for f in report_files
-                if os.path.isfile(os.path.join(report_directory, f))
-            ]
+            for file_name in report_files:
+                if os.path.isfile(os.path.join(report_directory, file_name)):
+                    if file_name.startswith("passive_recon_"):
+                        categories["Passive Reconnaissance Reports"].append(file_name)
+                    elif file_name.startswith("active_recon_"):
+                        categories["Active Reconnaissance Reports"].append(file_name)
+                    elif file_name.startswith("vulnerability_assess_"):
+                        categories["Vulnerability Assessment Reports"].append(file_name)
+                    elif file_name.startswith("enumeration_"):
+                        categories["Enumeration Reports"].append(file_name)
+                    else:
+                        categories["Other Reports"].append(file_name)
 
         # Pass the list of files to the template
         context = {
-            "report_files": report_files,
+            "categories": categories,
             "media_url": settings.MEDIA_URL,
         }
 

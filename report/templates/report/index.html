@@ -17,11 +17,14 @@
     </div>
 
     <h1>Available Reports</h1>
-    <ul>
-        {% for report in report_files %}
-            <li><a href="{{ media_url }}{{ report }}" download>{{ report }}</a></li>
-        {% endfor %}
-    </ul>
+    {% for category, files in categories.items %}
+        <h2>{{ category }}</h2>
+        <ul>
+            {% for report in files %}
+                <li><a href="{{ media_url }}{{ report }}" download>{{ report }}</a></li>
+            {% endfor %}
+        </ul>
+    {% endfor %}
 {% endblock %}
 
 {% block script_js %}
