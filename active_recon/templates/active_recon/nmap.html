@@ -112,10 +112,11 @@
 
                 // select scan type value
                 let scanTypeValue = $('#scan-type').val();
+                let inputDomainValue = $('#domain').val();
 
                 let data = {
                     'scan-type': scanTypeValue,
-                    'domain': $('#domain').val(),
+                    'domain': inputDomainValue,
                     'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
                 };
 
@@ -160,8 +161,8 @@
 
                                 $('#download-pdf').on('click', function() {
                                     nmaptable.download("pdf", `${pdfReportFileName}.pdf`, {
-                                        orientation:"portrait",
-                                        title:"Scanning Result",
+                                        orientation:"landscape",
+                                        title:`Target Domain: ${inputDomainValue}`,
                                     });
                                 });
 
@@ -174,7 +175,10 @@
                                     isSaveReportButtonClicked = true;
 
                                     // Use download to trigger the PDF download
-                                    nmaptable.download("pdf", `${pdfReportFileName}.pdf`);
+                                    nmaptable.download("pdf", `${pdfReportFileName}.pdf`, {
+                                        orientation:"landscape",
+                                        title:`Target Domain: ${inputDomainValue}`,
+                                    });
 
                                     // Optionally, reset the flag after the download process starts
                                     setTimeout(() => {
