@@ -1,15 +1,18 @@
-{% include 'report/includes/report-name.html' %}
-
+{% include 'active_recon/includes/save-report-table.html' %}
 <script>
     function createNmapPortScanResult(data) {
         let table;
 
         table = new Tabulator("#scanning-result", {
             downloadEncoder:function(fileContents, mimeType){
-                var blob = new Blob([fileContents], { type: mimeType });
+                let blob = new Blob([combinedContents], { type: mimeType });
 
-                // Send the Blob to the server
-                savePdfToServer(blob);
+                // Check if the save report button was clicked
+                if (isSaveReportButtonClicked) {
+                    // Send the Blob to the server
+                    savePdfToServer(blob);
+                    return false;
+                }
 
                 return new Blob([fileContents], {type:mimeType});
             },
@@ -34,63 +37,5 @@
         });
 
         return table;
-    }
-
-    function getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-            let cookies = document.cookie.split(';');
-            for (let i = 0; i < cookies.length; i++) {
-                let cookie = cookies[i].trim();
-                if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
-            }
-        }
-        return cookieValue;
-    }
-
-    // Function to save the PDF Blob to the server
-    function savePdfToServer(pdfBlob) {
-        // get the passive tool name from backend
-        let activeToolName = "{{ active_tool.name }}";
-
-        // generate report pdf file name
-        let pdfReportFileName = generateReportName(activeToolName)
-
-        // generate pop-up
-        let successPopUp = new Popup({
-            id: `${pdfReportFileName}`,
-            title: "Report Saved Successfully",
-            content: `A file with name <strong>${pdfReportFileName}.pdf</strong> was generated successfully.`,
-        });
-
-        let formData = new FormData();
-        formData.append('pdf', pdfBlob, `${pdfReportFileName}.pdf`); // Append the Blob to FormData
-        formData.append('file_type', 'pdf'); // Append additional field file_type
-        formData.append('table_from', 'tabulator'); // Append additional field table_from
-
-        $.ajax({
-            type: 'POST',
-            url: "{% url 'save-report' %}",
-            data: formData,
-            processData: false,
-            contentType: false,
-            headers: {
-                'X-CSRFToken': getCookie('csrftoken') // Include CSRF token for security
-            },
-            success: function(response, textStatus, jqXHR) {
-                if (jqXHR.status === 200) {
-                    successPopUp.show(); // Show success popup
-                } else {
-                    alert('Error saving PDF file');
-                }
-            },
-            error: function(error) {
-                console.log('Error during saving report: ', error);
-                alert('An error occurred while saving the report. Please try again.');
-            }
-        });
     }
 </script>

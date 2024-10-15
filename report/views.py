@@ -26,7 +26,7 @@ def save_report(request):
             pdf = request.FILES["pdf"]
 
             print(f"pdf content is {pdf}")
-            save_path = os.path.join(settings.MEDIA_ROOT, "report_directory", pdf.name)
+            save_path = os.path.join(settings.MEDIA_ROOT, pdf.name)
 
             with open(save_path, "wb") as f:
                 for chunk in pdf.chunks():
@@ -39,9 +39,7 @@ def save_report(request):
         else:
             pdf = request.FILES.get("pdf")
             if pdf:
-                file_path = default_storage.save(
-                    os.path.join("report_directory", pdf.name), pdf
-                )
+                file_path = default_storage.save(os.path.join(pdf.name), pdf)
                 return JsonResponse(
                     {"message": "Report saved successfully.", "file_path": file_path},
                     status=200,
