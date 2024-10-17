@@ -3,6 +3,9 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.core.files.storage import default_storage
 from django.conf import settings
+from PyPDF2 import PdfMerger
+from datetime import datetime
+from yellow_hat.constants import NORMAL_CATEGORIES, MERGE_CATEGORIES
 import os
 
 
@@ -19,6 +22,8 @@ def index(request):
             "Active Reconnaissance Reports": [],
             "Vulnerability Assessment Reports": [],
             "Enumeration Reports": [],
+            "Merge Reports": [],
+            "Other Reports": [],
         }
 
         if os.path.exists(report_directory):
@@ -33,6 +38,8 @@ def index(request):
                         categories["Vulnerability Assessment Reports"].append(file_name)
                     elif file_name.startswith("enumeration_"):
                         categories["Enumeration Reports"].append(file_name)
+                    elif file_name.startswith("merge_"):
+                        categories["Merge Reports"].append(file_name)
                     else:
                         categories["Other Reports"].append(file_name)
 
@@ -40,12 +47,13 @@ def index(request):
         context = {
             "categories": categories,
             "media_url": settings.MEDIA_URL,
+            "normal_categories": NORMAL_CATEGORIES,
+            "merge_categories": MERGE_CATEGORIES,
         }
 
     return render(request, "report/index.html", context)
 
 
-@csrf_exempt
 def save_report(request):
     if request.method == "POST":
         file_type = request.POST.get("file_type", "").strip().lower()
@@ -78,3 +86,64 @@ def save_report(request):
                     status=200,
                 )
         return JsonResponse({"error": "No file uploaded."}, status=400)
+
+
+def delete_report(request):
+    print("Go to function delete_report")
+    if request.method == "POST":
+        selected_reports = request.POST.get("reports", "").split(",")
+        if not selected_reports:
+            return JsonResponse({"error": "No reports selected."}, status=400)
+
+        report_directory = os.path.join(settings.MEDIA_ROOT)
+
+        for report in selected_reports:
+            report_path = os.path.join(report_directory, report)
+            if os.path.exists(report_path):
+                os.remove(report_path)
+            else:
+                return JsonResponse(
+                    {"error": f"Report {report} not found."}, status=404
+                )
+
+        return JsonResponse({"message": "Reports deleted successfully."}, status=200)
+
+    return JsonResponse({"error": "Invalid request method."}, status=405)
+
+
+def merge_report(request):
+    print("Go to function merge_report")
+    if request.method == "POST":
+        selected_reports = request.POST.get("reports", "").split(",")
+        if not selected_reports:
+            return JsonResponse({"error": "No reports selected."}, status=400)
+
+        report_directory = os.path.join(settings.MEDIA_ROOT)
+        merger = PdfMerger()
+
+        for report in selected_reports:
+            report_path = os.path.join(report_directory, report)
+            if os.path.exists(report_path):
+                merger.append(report_path)
+            else:
+                return JsonResponse(
+                    {"error": f"Report {report} not found."}, status=404
+                )
+
+        # Create a filename with the current date and time
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        merged_report_filename = f"merge_report_{timestamp}.pdf"
+        merged_report_path = os.path.join(report_directory, merged_report_filename)
+
+        with open(merged_report_path, "wb") as merged_report_file:
+            merger.write(merged_report_file)
+        merger.close()
+
+        return JsonResponse(
+            {
+                "message": "Merge Report Successfully.",
+                "file_path": merged_report_filename,
+            },
+            status=200,
+        )
+    return JsonResponse({"error": "Invalid request method."}, status=405)

@@ -3,6 +3,59 @@
 
 {% block title %}Reporting Page{% endblock %}
 {% block site_css %}
+    <link rel="stylesheet" href="{% static 'report/styles/report.css' %}">
+
+    <style>
+        .pdf-page {
+            margin-bottom: 20px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .modal-dialog {
+            max-width: 90%;
+            margin: 1.75rem auto;
+        }
+
+        .modal-header {
+            background-color: #007bff; /* Change to your preferred color */
+            color: white;
+        }
+
+        .modal-body {
+            background-color: #f8f9fa; /* Light gray background for better contrast */
+        }
+
+        .close {
+            color: white;
+            opacity: 1;
+        }
+
+        .view-link {
+            color: #ff0077; /* Bootstrap primary color */
+            font-weight: bold;
+            text-decoration: none; /* Remove underline */
+        }
+
+        .view-link:hover {
+            color: #ff0077; /* Darker shade for hover effect */
+            text-decoration: underline; /* Underline on hover */
+        }
+
+        .btn-success {
+            background-color: #28a745; /* Bootstrap success color */
+            border-color: #28a745;
+        }
+
+        .btn-success:hover {
+            background-color: #218838;
+            border-color: #1e7e34;
+        }
+
+        .download-link {
+            margin-top: 10px;
+            display: block;
+        }
+    </style>
 {% endblock %}
 
 {% block main_heading %}
@@ -16,16 +69,253 @@
         <p>A cybersecurity report presents critical information about cybersecurity threats, risks within a digital ecosystem, gaps in security controls, and how a security program performs. Cybersecurity reports help to foster data-driven communication between boards, executives, security practitioners, and security and risks leaders to ensure that all parties are working together to enhance security programs and mitigate risk.</p>
     </div>
 
-    <h1>Available Reports</h1>
-    {% for category, files in categories.items %}
-        <h2>{{ category }}</h2>
-        <ul>
-            {% for report in files %}
-                <li><a href="{{ media_url }}{{ report }}" download>{{ report }}</a></li>
-            {% endfor %}
-        </ul>
-    {% endfor %}
+    <div class="d-flex align-items-center mb-3">
+        <h1 class="m-0">Available Reports</h1>
+        <div class="col-auto ms-3">
+            <button id="merge-button" class="btn btn-primary">Merge Selected Reports</button>
+        </div>
+        <div class="col-auto ms-3">
+            <button id="delete-button" class="btn btn-danger">Delete Selected Reports</button>
+        </div>
+    </div>
+
+    <!-- Modal HTML -->
+    <div id="pdfModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="pdfModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="pdfModalLabel">Temporary PDF View</h5>
+                    <!-- <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button> -->
+                </div>
+                <div class="modal-body" style="max-height: 80vh; overflow-y: auto;">
+                    <div id="pdfContainer" class="d-flex flex-column align-items-center"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <form id="merge-form">
+        {% csrf_token %}
+        <div class="container">
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    {% for category, files in categories.items %}
+                        {% if category in normal_categories %}
+                            <h2>{{ category }}</h2>
+                            <ul>
+                                {% for report in files %}
+                                    <li>
+                                        <input type="checkbox" name="reports" value="{{ report }}" required>
+                                        <a href="{{ media_url }}{{ report }}" download>{{ report }}</a>
+                                        <a class="view-link" href="{{ media_url }}{{ report }}">(View)</a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                
+                <div class="col-md-6">
+                    <ul>
+                        {% for category, files in categories.items %}
+                            {% if category in merge_categories %}
+                                <h2>{{ category }}</h2>
+                                <ul>
+                                    {% for report in files %}
+                                        <li>
+                                            <input type="checkbox" name="reports" value="{{ report }}" required>
+                                            <a href="{{ media_url }}{{ report }}" download>{{ report }}</a>
+                                            <a class="view-link" href="{{ media_url }}{{ report }}">(View)</a>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </form>
 {% endblock %}
 
 {% block script_js %}
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.min.js"></script>
+
+    <script type="text/javascript">
+        document.addEventListener("DOMContentLoaded", function() {
+            // Configure the PDF.js workerSrc property
+            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.worker.min.js';
+
+            // Event listener for the "View" links
+            document.querySelectorAll('.view-link').forEach(function(link) {
+                link.addEventListener('click', function(event) {
+                    event.preventDefault(); // Prevent default anchor click behavior
+                    const pdfUrl = event.target.getAttribute('href'); // Get the URL of the PDF
+
+                    // Load the PDF using pdf.js
+                    const loadingTask = pdfjsLib.getDocument(pdfUrl);
+                    loadingTask.promise.then(pdf => {
+                        const pdfContainer = document.getElementById('pdfContainer');
+                        pdfContainer.innerHTML = ''; // Clear previous content
+
+                        // Function to render a single page
+                        function renderPage(pageNum) {
+                            pdf.getPage(pageNum).then(page => {
+                                const scale = 2; // Increase scale for better quality
+                                const viewport = page.getViewport({ scale: scale });
+
+                                // Prepare canvas using PDF page dimensions
+                                const canvas = document.createElement('canvas');
+                                canvas.className = 'pdf-page';
+                                const context = canvas.getContext('2d');
+                                canvas.height = viewport.height;
+                                canvas.width = viewport.width;
+
+                                // Render PDF page into canvas context
+                                const renderContext = {
+                                    canvasContext: context,
+                                    viewport: viewport
+                                };
+                                page.render(renderContext).promise.then(() => {
+                                    pdfContainer.appendChild(canvas);
+                                });
+                            });
+                        }
+
+                        // Loop through each page and render
+                        for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+                            renderPage(pageNum);
+                        }
+                    }, reason => {
+                        console.error(reason); // Error handling
+                    });
+
+                    // Show the modal
+                    $('#pdfModal').modal('show');
+                });
+            });
+        });
+    
+        $(document).ready(function() {
+            let errorPopup = new Popup({
+                title: "Merge Failed",
+                content: `An error occurred while merging the reports. Please try again.`,
+            });
+
+            let errorDeletePopup = new Popup({
+                title: "Delete Failed",
+                content: `An error occurred while deleting the reports. Please try again.`,
+            });
+
+            // generate success pop-up
+            let successPopUp = new Popup({
+                title: "Merge Successfully.",
+                content: `A merged report was generated successfully.`,
+                hideCallback: () => {
+                    console.log("Popup closed!");
+                    location.reload();
+                },
+            });
+
+            // generate success pop-up
+            let deletePopUp = new Popup({
+                title: "Delete Successfully.",
+                content: `Selected reports were deleted successfully.`,
+                hideCallback: () => {
+                    console.log("Popup closed!");
+                    location.reload();
+                },
+            });
+
+            let infoPopUp = new Popup({
+                title: "Nope!",
+                content: `Please select at least one report to process.`,
+            });
+
+            // handle merge button
+            $('#merge-button').on('click', function(e) {
+                e.preventDefault()
+
+                let selectedReports = [];
+                $('input[name="reports"]:checked').each(function() {
+                    selectedReports.push($(this).val());
+                });
+
+                if (selectedReports.length === 0) {
+                    infoPopUp.show();
+                    return;
+                }
+
+                let formData = new FormData();
+                formData.append('reports', selectedReports);
+                formData.append('csrfmiddlewaretoken', $('input[name=csrfmiddlewaretoken]').val());
+
+                $.ajax({
+                    type: 'POST',
+                    url: "{% url 'merge-report' %}",
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(response) {
+                        if (response.message === "Merge Report Successfully.") {
+                            successPopUp.show();
+                        } else {
+                            errorPopup.show();
+                        }
+                    },
+                    error: function(error) {
+                        console.error('Error merging reports:', error);
+                        errorPopup.show();
+                    }
+                });
+            });
+
+
+            // handle delete button
+            $('#delete-button').on('click', function(e) {
+                e.preventDefault(); // Prevent form submission
+                
+                // Gather selected report names
+                let selectedReports = $('input[name="reports"]:checked').map(function() {
+                    return $(this).val();
+                }).get();
+
+                if (selectedReports.length === 0) {
+                    infoPopUp.show();
+                    return;
+                }
+
+                let formData = new FormData();
+                formData.append('reports', selectedReports);
+                formData.append('csrfmiddlewaretoken', $('input[name=csrfmiddlewaretoken]').val());
+
+                // Confirmation dialog
+                if (confirm('Are you sure you want to delete the selected reports?')) {
+                    // Send the request to the backend
+                    $.ajax({
+                        type: 'POST',
+                        url: "{% url 'delete-report' %}",
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        success: function(response) {
+                            if (response.message === "Reports deleted successfully.") {
+                                deletePopUp.show();
+                            } else {
+                                errorDeletePopup.show();
+                            }
+                        },
+                        error: function(error) {
+                            console.error('Error deleting reports:', error);
+                            errorDeletePopup.show();
+                        }
+                    });
+                }
+            });
+        });
+    </script>
 {% endblock %}

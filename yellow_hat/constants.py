@@ -1,3 +1,14 @@
+NORMAL_CATEGORIES = [
+    "Passive Reconnaissance Reports",
+    "Active Reconnaissance Reports",
+    "Vulnerability Assessment Reports",
+    "Enumeration Reports",
+    "Other Reports",
+]
+
+MERGE_CATEGORIES = ["Merge Reports"]
+
+
 NSLOOKUP = ["nslookup"]
 WHOIS = ["whois"]
 NMAP = ["nmap"]
