@@ -19,6 +19,7 @@ pyasn1==0.6.1
 PyPDF2==3.0.1
 pysnmp==7.1.5
 python-dateutil==2.9.0.post0
+python-decouple==3.8
 python-nmap==0.7.1
 python-whois==0.9.4
 python3-nmap==1.9.1
