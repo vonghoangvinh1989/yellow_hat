@@ -18,6 +18,7 @@ def index(request):
 
         # Initialize categories
         categories = {
+            "Planning and Scoping Reports": [],
             "Passive Reconnaissance Reports": [],
             "Active Reconnaissance Reports": [],
             "Vulnerability Assessment Reports": [],
@@ -30,7 +31,9 @@ def index(request):
             report_files = os.listdir(report_directory)
             for file_name in report_files:
                 if os.path.isfile(os.path.join(report_directory, file_name)):
-                    if file_name.startswith("passive_recon_"):
+                    if file_name.startswith("planning_scoping_"):
+                        categories["Planning and Scoping Reports"].append(file_name)
+                    elif file_name.startswith("passive_recon_"):
                         categories["Passive Reconnaissance Reports"].append(file_name)
                     elif file_name.startswith("active_recon_"):
                         categories["Active Reconnaissance Reports"].append(file_name)

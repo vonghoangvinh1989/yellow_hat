@@ -1,0 +1,80 @@
+<script>
+    document.getElementById("clearFormButton").addEventListener("click", function() {
+        // Get the form element
+        let form = document.getElementById("rulesForm");
+        // Reset the form fields to their default values
+        form.reset();
+    });
+
+    document.getElementById('fillTemplateBtn').addEventListener('click', function() {
+        document.getElementById('team-primary-contact').value = 'John Doe';
+        document.getElementById('team-primary-phone').value = '123-456-7890';
+        document.getElementById('team-primary-pager').value = '987-654-3210';
+        document.getElementById('team-secondary-contact').value = 'Jane Smith';
+        document.getElementById('team-secondary-phone').value = '098-765-4321';
+        document.getElementById('team-secondary-pager').value = '654-321-0987';
+
+        document.getElementById('target-primary-contact').value = 'Alice Johnson';
+        document.getElementById('target-primary-phone').value = '555-123-4567';
+        document.getElementById('target-primary-pager').value = '555-765-4321';
+        document.getElementById('target-secondary-contact').value = 'Bob Brown';
+        document.getElementById('target-secondary-phone').value = '555-987-6543';
+        document.getElementById('target-secondary-pager').value = '555-345-6789';
+
+        document.getElementById('debrief-frequency').value = 'Daily';
+        document.getElementById('debrief-location').value = 'Conference Room A';
+        document.getElementById('start-date').value = '2024-10-01';
+        document.getElementById('end-date').value = '2024-10-05';
+        document.getElementById('test-times').value = '9 AM to 5 PM';
+        document.getElementById('announced-test').value = 'yes';
+        document.getElementById('shun-ip').value = 'no';
+        document.getElementById('automatic-shun').value = 'None';
+        document.getElementById('shun-steps').value = 'Notify IT';
+        document.getElementById('conclude-test').value = 'no';
+        document.getElementById('continue-test').value = 'Use backup systems';
+        document.getElementById('attack-ips').value = '192.168.1.100, 192.168.1.101';
+        document.getElementById('black-box').value = 'yes';
+        document.getElementById('viewing-policy').value = 'Only if necessary';
+        document.getElementById('observing-team').value = 'yes';
+
+        document.getElementById('target-signature').value = 'Alice Johnson';
+        document.getElementById('target-date').value = '2024-10-01';
+        document.getElementById('pen-test-leader').value = 'John Smith';
+        document.getElementById('leader-date').value = '2024-10-01';
+        document.getElementById('tester-signatures').value = 'Team Member 1, Team Member 2';
+    });
+
+
+    function setupSignatureCanvas(canvasId, hiddenInputId, clearButtonId) {
+        const canvas = document.getElementById(canvasId);
+        const context = canvas.getContext('2d');
+        let drawing = false;
+
+        canvas.addEventListener('mousedown', (e) => {
+            drawing = true;
+            context.moveTo(e.offsetX, e.offsetY);
+        });
+
+        canvas.addEventListener('mousemove', (e) => {
+            if (drawing) {
+                context.lineTo(e.offsetX, e.offsetY);
+                context.stroke();
+            }
+        });
+
+    canvas.addEventListener('mouseup', () => {
+        drawing = false;
+        context.beginPath();
+        document.getElementById(hiddenInputId).value = canvas.toDataURL(); // Store the signature
+    });
+
+    document.getElementById(clearButtonId).addEventListener('click', () => {
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        document.getElementById(hiddenInputId).value = ''; // Clear the hidden input
+    });
+}
+
+    // Initialize the signature canvases
+    setupSignatureCanvas('target-signature-canvas', 'target-signature', 'clear-target-signature');
+    setupSignatureCanvas('pen-test-leader-canvas', 'pen-test-leader', 'clear-pen-test-leader');
+</script>

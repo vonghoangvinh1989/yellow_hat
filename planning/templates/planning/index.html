@@ -1,0 +1,356 @@
+{% extends 'main_app/base/base.html' %}
+{% load static %}
+
+{% block title %}Planning and Scoping Page{% endblock %}
+{% block site_css %}
+    <style>
+        /* General form styles */
+        fieldset {
+            border: 1px solid #e0e0e0; /* Light gray border */
+            border-radius: 5px; /* Rounded corners */
+            background-color: #f9f9f9; /* Light background */
+            padding: 20px; /* Inner padding */
+        }
+
+        /* Title styles */
+        .card-title {
+            font-size: 1.5rem; /* Larger title font */
+            margin-bottom: 15px; /* Space below the title */
+            color: #343a40; /* Dark gray color for text */
+        }
+
+        /* Form group styles */
+        .form-group {
+            margin-bottom: 20px; /* Space between form groups */
+        }
+
+        /* Label styles */
+        label {
+            font-weight: bold; /* Bold labels */
+            margin-bottom: 5px; /* Space below labels */
+            display: block; /* Ensure labels are block elements */
+            color: #495057; /* Darker text for labels */
+        }
+
+        /* Canvas styles for signature */
+        canvas {
+            background-color: #fff; /* White background for canvas */
+            border: 1px solid #ced4da; /* Border to define the canvas */
+            border-radius: 4px; /* Rounded corners */
+        }
+
+        /* Button styles */
+        button {
+            background-color: #007bff; /* Bootstrap primary color */
+            color: white; /* White text color */
+            border: none; /* Remove border */
+            border-radius: 4px; /* Rounded corners */
+            padding: 5px 10px; /* Padding */
+            cursor: pointer; /* Pointer cursor on hover */
+        }
+
+        button:hover {
+            background-color: #0056b3; /* Darker blue on hover */
+        }
+
+        /* Input styles */
+        input[type="date"],
+        textarea {
+            border: 1px solid #ced4da; /* Light gray border */
+            border-radius: 4px; /* Rounded corners */
+            padding: 10px; /* Inner padding */
+            width: 100%; /* Full width */
+            box-shadow: none; /* Remove default shadow */
+        }
+
+        /* Textarea specific styles */
+        textarea {
+            min-height: 100px; /* Minimum height */
+        }
+
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            /* Adjust the canvas size for smaller screens */
+            canvas {
+                width: 100%; /* Full width on smaller screens */
+                height: auto; /* Auto height */
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block main_heading %}
+    Planning and Scoping
+{% endblock %}
+
+{% block body %}
+    <section id="roe-planning">
+        <div class="d-flex align-items-center mb-3">
+            <div class="col-auto ms-3">
+                <button type="button" class="btn btn-primary" id="fillTemplateBtn">Fill in Template</button>
+            </div>
+            <div class="col-auto ms-3">
+                <button type="button" class="btn btn-danger" id="clearFormButton">Clear Form</button>
+            </div>
+        </div>
+
+        <form id="rulesForm" class="container my-5">
+            {% csrf_token %}
+            <div>
+                <fieldset class="card p-3 mb-4">
+                    <legend class="card-title">Penetration Testing Team Contact Information</legend>
+                    <div class="form-group">
+                        <label for="team-primary-contact">Primary Contact</label>
+                        <input type="text" class="form-control" id="team-primary-contact" name="team-primary-contact" placeholder="Enter primary contact name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="team-primary-phone">Mobile Phone</label>
+                        <input type="tel" class="form-control" id="team-primary-phone" name="team-primary-phone" placeholder="Enter primary contact phone number" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="team-primary-pager">Pager</label>
+                        <input type="text" class="form-control" id="team-primary-pager" name="team-primary-pager" placeholder="Enter primary contact pager">
+                    </div>
+                    <div class="form-group">
+                        <label for="team-secondary-contact">Secondary Contact</label>
+                        <input type="text" class="form-control" id="team-secondary-contact" name="team-secondary-contact" placeholder="Enter secondary contact name">
+                    </div>
+                    <div class="form-group">
+                        <label for="team-secondary-phone">Mobile Phone</label>
+                        <input type="tel" class="form-control" id="team-secondary-phone" name="team-secondary-phone" placeholder="Enter secondary contact phone number">
+                    </div>
+                    <div class="form-group">
+                        <label for="team-secondary-pager">Pager</label>
+                        <input type="text" class="form-control" id="team-secondary-pager" name="team-secondary-pager" placeholder="Enter secondary contact pager">
+                    </div>
+                </fieldset>
+            
+                <fieldset class="card p-3 mb-4">
+                    <legend class="card-title">Target Organization Contact Information</legend>
+                    <div class="form-group">
+                        <label for="target-primary-contact">Primary Contact</label>
+                        <input type="text" class="form-control" id="target-primary-contact" name="target-primary-contact" placeholder="Enter primary contact name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="target-primary-phone">Mobile Phone</label>
+                        <input type="tel" class="form-control" id="target-primary-phone" name="target-primary-phone" placeholder="Enter primary contact phone number" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="target-primary-pager">Pager</label>
+                        <input type="text" class="form-control" id="target-primary-pager" name="target-primary-pager" placeholder="Enter primary contact pager">
+                    </div>
+                    <div class="form-group">
+                        <label for="target-secondary-contact">Secondary Contact</label>
+                        <input type="text" class="form-control" id="target-secondary-contact" name="target-secondary-contact" placeholder="Enter secondary contact name">
+                    </div>
+                    <div class="form-group">
+                        <label for="target-secondary-phone">Mobile Phone</label>
+                        <input type="tel" class="form-control" id="target-secondary-phone" name="target-secondary-phone" placeholder="Enter secondary contact phone number">
+                    </div>
+                    <div class="form-group">
+                        <label for="target-secondary-pager">Pager</label>
+                        <input type="text" class="form-control" id="target-secondary-pager" name="target-secondary-pager" placeholder="Enter secondary contact pager">
+                    </div>
+                </fieldset>
+            
+                <fieldset class="card p-3 mb-4">
+                    <legend class="card-title">Testing Information</legend>
+                    <div class="form-group">
+                        <label for="debrief-frequency">"Daily Debriefing" Frequency</label>
+                        <input type="text" class="form-control" id="debrief-frequency" name="debrief-frequency" placeholder="Enter debriefing frequency" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="debrief-location">"Daily Debriefing" Time/Location</label>
+                        <input type="text" class="form-control" id="debrief-location" name="debrief-location" placeholder="Enter debriefing time and location" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="start-date">Start Date of Penetration Test</label>
+                        <input type="date" class="form-control" id="start-date" name="start-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="end-date">End Date of Penetration Test</label>
+                        <input type="date" class="form-control" id="end-date" name="end-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="test-times">Testing Occurs at Following Times</label>
+                        <input type="text" class="form-control" id="test-times" name="test-times" placeholder="Enter testing times" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="announced-test">Will test be announced to target personnel?</label>
+                        <select class="form-control" id="announced-test" name="announced-test" required>
+                            <option value="">Select an option</option>
+                            <option value="yes">Yes</option>
+                            <option value="no">No</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="shun-ip">Will target organization shun IP addresses of attack systems?</label>
+                        <select class="form-control" id="shun-ip" name="shun-ip" required>
+                            <option value="">Select an option</option>
+                            <option value="yes">Yes</option>
+                            <option value="no">No</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="automatic-shun">Does target organization's network have automatic shunning capabilities?</label>
+                        <textarea class="form-control" id="automatic-shun" name="automatic-shun" placeholder="Enter details" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="shun-steps">Steps to mitigate risk from automatic shunning</label>
+                        <textarea class="form-control" id="shun-steps" name="shun-steps" placeholder="Enter steps" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="conclude-test">Would the shunning of attack systems conclude the test?</label>
+                        <select class="form-control" id="conclude-test" name="conclude-test" required>
+                            <option value="">Select an option</option>
+                            <option value="yes">Yes</option>
+                            <option value="no">No</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="continue-test">If not, steps to continue testing if systems get shunned</label>
+                        <textarea class="form-control" id="continue-test" name="continue-test" placeholder="Enter steps"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="attack-ips">IP addresses of penetration testing team's attack systems</label>
+                        <textarea class="form-control" id="attack-ips" name="attack-ips" placeholder="Enter IP addresses" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="black-box">Is this a "black box" test?</label>
+                        <select class="form-control" id="black-box" name="black-box" required>
+                            <option value="">Select an option</option>
+                            <option value="yes">Yes</option>
+                            <option value="no">No</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="viewing-policy">Policy regarding viewing data on compromised hosts</label>
+                        <textarea class="form-control" id="viewing-policy" name="viewing-policy" placeholder="Enter policy details" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="observing-team">Will target personnel observe the testing team?</label>
+                        <select class="form-control" id="observing-team" name="observing-team" required>
+                            <option value="">Select an option</option>
+                            <option value="yes">Yes</option>
+                            <option value="no">No</option>
+                        </select>
+                    </div>
+                </fieldset>
+            
+                <!-- <fieldset class="card p-3 mb-4">
+                    <legend class="card-title">Signatures</legend>
+                    <div class="form-group">
+                        <label for="target-signature">Signature of Primary Contact representing Target Organization</label>
+                        <input type="text" class="form-control" id="target-signature" name="target-signature" placeholder="Enter signature" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="target-date">Date</label>
+                        <input type="date" class="form-control" id="target-date" name="target-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="pen-test-leader">Signature of Head of Penetration Testing Team</label>
+                        <input type="text" class="form-control" id="pen-test-leader" name="pen-test-leader" placeholder="Enter signature" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="leader-date">Date</label>
+                        <input type="date" class="form-control" id="leader-date" name="leader-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="tester-signatures">Signatures of individual testers (if necessary)</label>
+                        <textarea class="form-control" id="tester-signatures" name="tester-signatures" placeholder="Enter signatures"></textarea>
+                    </div>
+                </fieldset> -->
+
+                <fieldset class="card p-3 mb-4">
+                    <legend class="card-title">Signatures</legend>
+                    
+                    <div class="form-group">
+                        <label for="target-signature">Signature of Primary Contact representing Target Organization</label>
+                        <canvas id="target-signature-canvas" width="400" height="150" style="border:1px solid #000;"></canvas>
+                        <input type="hidden" id="target-signature" name="target-signature">
+                        <button type="button" id="clear-target-signature">Clear Signature</button>
+                        <br>
+                        <label for="target-date">Date</label>
+                        <input type="date" class="form-control" id="target-date" name="target-date" required>
+                    </div>
+                
+                    <div class="form-group">
+                        <label for="pen-test-leader">Signature of Head of Penetration Testing Team</label>
+                        <canvas id="pen-test-leader-canvas" width="400" height="150" style="border:1px solid #000;"></canvas>
+                        <input type="hidden" id="pen-test-leader" name="pen-test-leader">
+                        <button type="button" id="clear-pen-test-leader">Clear Signature</button>
+                        <br>
+                        <label for="leader-date">Date</label>
+                        <input type="date" class="form-control" id="leader-date" name="leader-date" required>
+                    </div>
+                
+                    <div class="form-group">
+                        <label for="tester-signatures">Signatures of individual testers (if necessary)</label>
+                        <textarea class="form-control" id="tester-signatures" name="tester-signatures" placeholder="Enter signatures"></textarea>
+                    </div>
+                </fieldset>
+            
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
+        </form>
+    </section>
+{% endblock %}
+
+{% block script_js %}
+    {% include 'planning/includes/handle-form-input.html' %}
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            function showErrorPopup(errorMessage) {
+                let errorPopup = new Popup({
+                    title: "Form Submission Failed",
+                    content: `An error occurred while saving the Rules of Engagement form: ${errorMessage}. Please try again.`,
+                    hideCallback: () => {
+                        console.log("Error popup closed!");
+                    },
+                });
+                errorPopup.show();
+            }
+
+            // Function to show success popup with the PDF file name
+            function showSuccessPopup(pdf_file_name) {
+                // Generate success pop-up
+                let successPopUp = new Popup({
+                    title: "Success!",
+                    content: `A PDF file named "${pdf_file_name}" was generated successfully. You can check it in the Report section.`,
+                    hideCallback: () => {
+                        console.log("Popup closed!");
+                        location.reload(); // Optionally reload  page or redirect
+                    },
+                });
+                successPopUp.show();
+            }
+
+            $('#rulesForm').on('submit', function(event) {
+                event.preventDefault();
+
+                $.ajax({
+                    type: 'POST',
+                    url: '{% url "planning" %}',
+                    data: $(this).serialize(),
+                    success: function(response) {
+                        if (response.status === 'success') {
+                            // Show the success popup from pop-up.js
+                            showSuccessPopup(response.pdf_file_name); // Use the message from the response
+                        } else {
+                            showErrorPopup('Unexpected response.')
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        // Handle different error statuses here
+                        if (xhr.status === 400) {
+                            showErrorPopup('Bad request.')
+                        } else {
+                            showErrorPopup(error)
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}

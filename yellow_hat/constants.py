@@ -1,4 +1,5 @@
 NORMAL_CATEGORIES = [
+    "Planning and Scoping Reports",
     "Passive Reconnaissance Reports",
     "Active Reconnaissance Reports",
     "Vulnerability Assessment Reports",

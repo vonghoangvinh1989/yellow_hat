@@ -39,6 +39,8 @@
             <ul class="nav-menu">
                 <li><a href="/main" onclick="showSection('home')">Home</a></li>
 
+                <li><a href="/planning" onclick="showSection('planning')">Planning and Scoping</a></li>
+
                 {% include 'main_app/includes/passive-tool.html' %}
                 {% include 'main_app/includes/active-tool.html' %}
                 {% include 'main_app/includes/vulnerability-tool.html' %}
@@ -48,16 +50,12 @@
                     <a href="#" onclick="showSection('exploit')">Exploit</a>
                     <ul class="dropdown">
                         <li><a href="#">Metasploit</a></li>
-                        <li><a href="#">ExploitDB</a></li>
-                        <li><a href="#">SQLmap</a></li>
                     </ul>
                 </li>
                 <li>
                     <a href="#" onclick="showSection('post-exploit')">Post-Exploit</a>
                     <ul class="dropdown">
                         <li><a href="#">Meterpreter</a></li>
-                        <li><a href="#">Empire</a></li>
-                        <li><a href="#">PowerShell</a></li>
                     </ul>
                 </li>
                 <li>

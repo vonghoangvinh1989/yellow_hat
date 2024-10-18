@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
+from decouple import config
 from pathlib import Path
 import os
 
@@ -44,6 +45,7 @@ INSTALLED_APPS = [
     "vulnerability_assessment",
     "enumeration",
     "report",
+    "planning",
 ]
 
 MIDDLEWARE = [
@@ -134,6 +136,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # Configure media directory to store reporting files
 MEDIA_URL = "/report_directory/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "report_directory")
+SIGNATURES_DIRECTORY = os.path.join(MEDIA_ROOT, "signatures")
 
 # CELERY
 CELERY_BROKER_URL = "amqp://guest:guest@localhost:5672//"
@@ -143,6 +146,6 @@ CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
 CELERY_TIMEZONE = "UTC"
 
-# API_KEY
-SECURITY_TRAILS = "5hIj5Wvw0tYeK1WnIoMHsSt316KQT_sG"
-HUNTER_IO = "71de0ca7c98f32ad2f7113ddfd092c9dd289486c"
+# API_KEY FROM .env file
+SECURITY_TRAILS = config("SECURITY_TRAILS")
+HUNTER_IO = config("HUNTER_IO")

@@ -25,6 +25,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("", RedirectView.as_view(url="/main")),
     path("main/", include("main_app.urls")),
+    path("planning/", include("planning.urls")),
     path("passive-recon/", include("passive_recon.urls")),
     path("active-recon/", include("active_recon.urls")),
     path("vulnerability-assessment/", include("vulnerability_assessment.urls")),
