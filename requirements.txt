@@ -3,6 +3,7 @@ asgiref==3.8.1
 billiard==4.2.1
 celery==5.4.0
 certifi==2024.8.30
+chardet==5.2.0
 charset-normalizer==3.4.0
 click==8.1.7
 click-didyoumean==0.3.1
@@ -14,6 +15,7 @@ django-celery-results==2.5.1
 dnspython==2.6.1
 idna==3.10
 kombu==5.4.2
+pillow==11.0.0
 prompt_toolkit==3.0.48
 pyasn1==0.6.1
 PyPDF2==3.0.1
@@ -23,6 +25,7 @@ python-decouple==3.8
 python-nmap==0.7.1
 python-whois==0.9.4
 python3-nmap==1.9.1
+reportlab==4.2.5
 requests==2.32.3
 simplejson==3.19.3
 six==1.16.0
