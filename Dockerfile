@@ -4,7 +4,7 @@ ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
 # Set the working directory in the container
-WORKDIR /app
+WORKDIR /yellow_hat
 
 # Install Nmap
 RUN apt-get update && apt-get install -y nmap
