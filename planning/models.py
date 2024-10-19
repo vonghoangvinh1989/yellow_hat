@@ -45,12 +45,12 @@ class PenetrationTest(models.Model):
     tester_signatures = models.TextField(blank=True, null=True)
 
     target_signature_image = models.ImageField(
-        upload_to=settings.SIGNATURES_DIRECTORY,  # Use settings for dynamic path
+        upload_to="signatures/",  # Use settings for dynamic path
         blank=True,
         null=True,
     )
     pen_test_leader_signature_image = models.ImageField(
-        upload_to=settings.SIGNATURES_DIRECTORY,  # Use settings for dynamic path
+        upload_to="signatures/",  # Use settings for dynamic path
         blank=True,
         null=True,
     )
