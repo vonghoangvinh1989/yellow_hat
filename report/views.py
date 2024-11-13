@@ -6,10 +6,12 @@ from django.conf import settings
 from PyPDF2 import PdfMerger
 from datetime import datetime
 from yellow_hat.constants import NORMAL_CATEGORIES, MERGE_CATEGORIES
+from django.contrib.auth.decorators import login_required
 import os
 
 
 # Create your views here.
+@login_required
 def index(request):
     if request.method == "GET":
         print("Go to function index of reporting")

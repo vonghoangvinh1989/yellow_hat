@@ -22,6 +22,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
+    path("accounts/", include("allauth.urls")),
     path("admin/", admin.site.urls),
     path("", RedirectView.as_view(url="/main")),
     path("main/", include("main_app.urls")),

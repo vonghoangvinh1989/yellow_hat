@@ -17,6 +17,17 @@
             height: 3rem;
             border-width: .3em;
         }
+
+        .username {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #007bff;
+            margin-right: 1rem;
+        }
+
+        .auth-links a {
+            margin-left: 1rem; /* Space between links */
+        }
     </style>
     {% block site_css %}{% endblock %}
 </head>
@@ -29,8 +40,18 @@
                         <!-- <img height="200px" width="200px" src="{% static 'main_app/images/logo.png' %}" alt="Logo" class="img-fluid"> -->
                     </a>
                 </div>
-                <div class="col-md-9">
+                <div class="col-md-9 d-flex justify-content-between align-items-center">
                     <h1 class="mt-4 mb-3 display-4">{% block main_heading %}{% endblock %}</h1>
+                    <div class="auth-links">
+                        {% if user.is_authenticated %}
+                            <span class="username">Hello, {{ user.username }}</span>
+                            <a href="{% url 'account_change_password' %}" class="btn btn-outline-secondary">Change Password</a>
+                            <a href="{% url 'account_logout' %}" class="btn btn-outline-danger">Sign Out</a>
+                        {% else %}
+                            <a href="{% url 'account_login' %}" class="btn btn-outline-primary">Sign In</a>
+                            <a href="{% url 'account_signup' %}" class="btn btn-outline-success">Sign Up</a>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
         </div>
@@ -61,6 +82,8 @@
                 <li>
                     <a href="/report" onclick="showSection('report')">Report</a>
                 </li>
+
+               
             </ul>
         </nav>
     </header>
