@@ -39,27 +39,6 @@
            id="{{ attrs.id }}"
            {% if attrs.value is not None %}value="{{ attrs.value }}"{% endif %}
            type="hidden">
-{% elif attrs.type == "select" %}
-    <pre>{{ attrs.field.choices }}</pre>
-    <div class="mb-3">
-        <label class="" for="{{ attrs.id }}">
-            {% slot label %}
-            {% endslot %}
-        </label>
-        <select name="{{ attrs.name }}" id="{{ attrs.id }}" class="form-control" {% if attrs.required %}required{% endif %}>
-            {% for option in attrs.field.choices %}
-                <option value="{{ option.0 }}" {% if option.0 == attrs.value %}selected{% endif %}>
-                    {{ option.1 }}
-                </option>
-            {% endfor %}
-        </select>
-        {% if slots.help_text %}
-            <div class="form-text">
-                {% slot help_text %}
-                {% endslot %}
-            </div>
-        {% endif %}
-    </div>
 {% else %}
     <div class="{% if attrs.unlabeled %}form-floating{% endif %} mb-3">
         {% if not attrs.unlabeled %}

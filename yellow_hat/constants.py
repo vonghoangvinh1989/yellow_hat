@@ -9,7 +9,6 @@ NORMAL_CATEGORIES = [
 
 MERGE_CATEGORIES = ["Merge Reports"]
 
-
 NSLOOKUP = ["nslookup"]
 WHOIS = ["whois"]
 NMAP = ["nmap"]
@@ -35,4 +34,16 @@ NMAP_SCAN_TYPES = [
         "name": "Top Ports Scan",
         "value": TOP_PORTS_SCAN,
     },
+]
+
+# For sign-up custom form
+JOB_CHOICES = [
+    ("", "Select your job role"),
+    ("student", "Student"),
+    ("developer", "Developer"),
+    ("sysadmin", "System Administrator"),
+    ("security", "Security Specialist"),
+    ("manager", "IT Manager"),
+    ("consultant", "Consultant"),
+    ("other", "Other"),
 ]

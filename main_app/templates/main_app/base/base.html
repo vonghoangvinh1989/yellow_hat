@@ -11,22 +11,20 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="{% static 'main_app/styles/base.css' %}">
     <style>
-        .spinner-border {
-            display: none;
-            width: 3rem;
-            height: 3rem;
-            border-width: .3em;
-        }
-
         .username {
             font-size: 1.25rem;
-            font-weight: 600;
+            font-weight: 500;
             color: #007bff;
             margin-right: 1rem;
         }
 
+        .auth-links {
+            display: flex;
+            justify-content: flex-end;
+        }
+
         .auth-links a {
-            margin-left: 1rem; /* Space between links */
+            margin-left: 0.5rem; /* Space between links */
         }
     </style>
     {% block site_css %}{% endblock %}
@@ -35,16 +33,16 @@
     <header>
         <div class="container">
             <div class="row align-items-center">
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <a href="/">
                         <!-- <img height="200px" width="200px" src="{% static 'main_app/images/logo.png' %}" alt="Logo" class="img-fluid"> -->
                     </a>
                 </div>
-                <div class="col-md-9 d-flex justify-content-between align-items-center">
-                    <h1 class="mt-4 mb-3 display-4">{% block main_heading %}{% endblock %}</h1>
-                    <div class="auth-links">
+                <div class="col-md-10 d-flex justify-content-between align-items-center">
+                    <h1 class="mt-3 mb-2 display-5">{% block main_heading %}{% endblock %}</h1>
+                    <div class="auth-links mt-3 mb-2">
                         {% if user.is_authenticated %}
-                            <span class="username">Hello, {{ user.username }}</span>
+                            <span class="username">Hello, {{ user.first_name }} {{ user.last_name }}</span>
                             <a href="{% url 'account_change_password' %}" class="btn btn-outline-secondary">Change Password</a>
                             <a href="{% url 'account_logout' %}" class="btn btn-outline-danger">Sign Out</a>
                         {% else %}

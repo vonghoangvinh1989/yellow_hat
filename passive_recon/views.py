@@ -2,8 +2,7 @@ from django.shortcuts import render
 from django.http import Http404, JsonResponse
 from .models import Tool
 from .utils import dnspython_utils, whois_utils
-
-# constant variables
+from django.contrib.auth.decorators import login_required
 from yellow_hat.constants import NSLOOKUP, WHOIS
 
 
@@ -12,6 +11,7 @@ def index(request):
     return render(request, "passive_recon/index.html")
 
 
+@login_required
 def passive_recon_tools(request, passive_tool_slug):
     passive_tool = Tool.objects.get(slug=passive_tool_slug)
     passive_tool_name = passive_tool.name.strip().lower()

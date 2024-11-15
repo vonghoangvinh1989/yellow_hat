@@ -1,0 +1,22 @@
+# Open the Django shell
+python manage.py shell
+
+# Import the necessary models
+from django.contrib.auth import get_user_model
+from your_app_name.models import Profile
+
+# Get the User model
+User = get_user_model()
+
+# Retrieve the user
+user = User.objects.get(username='example_username')
+
+# Get or create the profile
+profile, created = Profile.objects.get_or_create(user=user)
+
+# Update the profile fields
+profile.job_role = 'developer'  # Change to the desired job role
+profile.save()
+
+# Verify the update
+print(profile.job_role)  # Should output 'developer'

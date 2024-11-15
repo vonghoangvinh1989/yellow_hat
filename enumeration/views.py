@@ -3,10 +3,8 @@ from django.http import Http404, JsonResponse
 from .models import EnumerationTool
 from .utils import pysnmp_utils, subdomain_utils, email_finder_utils
 from django.conf import settings
+from django.contrib.auth.decorators import login_required
 import asyncio
-
-
-# constant variables
 from yellow_hat.constants import SNMP_WALK, SUBDOMAIN, EMAIL_FINDER
 
 
@@ -15,6 +13,7 @@ def index(request):
     return render(request, "enumeration/index.html")
 
 
+@login_required
 def enumeration_tools(request, enumeration_tool_slug):
     enumeration_tool = EnumerationTool.objects.get(slug=enumeration_tool_slug)
     enumeration_tool_name = enumeration_tool.name.strip().lower()

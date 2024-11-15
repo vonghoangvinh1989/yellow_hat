@@ -24,7 +24,8 @@
         {% element form form=form method="post" action=action_url tags="entrance,signup" %}
             {% slot body %}
                 {% csrf_token %}
-                    {{ form.as_p}}
+                {% element fields form=form unlabeled=True %}
+                {% endelement %}
                 {{ redirect_field }}
             {% endslot %}
             {% slot actions %}
@@ -34,7 +35,8 @@
             {% endslot %}
         {% endelement %}
     {% endif %}
-    
+
+
     {% if PASSKEY_SIGNUP_ENABLED %}
         {% element hr %}
         {% endelement %}

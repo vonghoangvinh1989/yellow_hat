@@ -29,9 +29,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
 # Application definition
-
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -162,14 +160,14 @@ CELERY_TIMEZONE = "UTC"
 SECURITY_TRAILS = config("SECURITY_TRAILS")
 HUNTER_IO = config("HUNTER_IO")
 
-# DJANGO ALLAUTH
+# DJANGO ALLAUTH SECTIONS
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = "optional"
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_AUTHENTICATION_METHOD = "email"
 ACCOUNT_UNIQUE_EMAIL = True
 
-# Email settings for Gmail SMTP
+# Configuration for EMAIL settings
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587
@@ -178,10 +176,17 @@ EMAIL_HOST_USER = config("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")
 DEFAULT_FROM_EMAIL = config("DEFAULT_FROM_EMAIL")
 
+# Configuration for Account Forms
 ACCOUNT_FORMS = {
     "signup": "custom_account.forms.CustomSignupForm",
 }
 
+# Configuration for Account Rate Limits
+ACCOUNT_RATE_LIMITS = {
+    "login_failed": False,
+}
+
+# Configuration for Social Account Providers (Google)
 SOCIALACCOUNT_PROVIDERS = {
     "google": {
         "APP": {

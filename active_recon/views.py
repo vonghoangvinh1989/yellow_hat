@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import Http404, JsonResponse
 from .models import ActiveReconTool
 from .utils import python3_nmap_utils
+from django.contrib.auth.decorators import login_required
 
 # constant variables
 from yellow_hat.constants import (
@@ -17,6 +18,7 @@ def index(request):
     return render(request, "active_recon/index.html")
 
 
+@login_required
 def active_recon_tools(request, active_tool_slug):
     active_tool = ActiveReconTool.objects.get(slug=active_tool_slug)
     active_tool_name = active_tool.name.strip().lower()
