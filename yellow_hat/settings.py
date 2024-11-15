@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     "allauth.socialaccount.providers.google",
     "allauth.socialaccount.providers.facebook",
     "custom_account",
+    "digital_forensic",
 ]
 
 LOGIN_REDIRECT_URL = "/main/"

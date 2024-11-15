@@ -47,3 +47,6 @@ JOB_CHOICES = [
     ("consultant", "Consultant"),
     ("other", "Other"),
 ]
+
+# For digital forensic tool
+VOLATILITY = ["volatility"]

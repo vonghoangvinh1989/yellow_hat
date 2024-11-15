@@ -1,0 +1,8 @@
+<li>
+    <a href="{% url 'digital-forensic' %}" onclick="showSection('digital-forensic')">Digital Forensic</a>
+    <ul class="dropdown">
+        {% for digital_item in digital_forensic_tools %}
+            <li><a href="{% url 'digital-forensic-tools' digital_item.slug  %}">{{ digital_item.name | capfirst }}</a></li>
+        {% endfor %}
+    </ul>
+</li>
