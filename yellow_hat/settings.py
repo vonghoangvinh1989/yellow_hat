@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     "allauth.account",
     "allauth.socialaccount",
     "allauth.socialaccount.providers.google",
+    "allauth.socialaccount.providers.facebook",
     "custom_account",
 ]
 
@@ -201,5 +202,19 @@ SOCIALACCOUNT_PROVIDERS = {
         "AUTH_PARAMS": {
             "access_type": "online",
         },
-    }
+    },
+    "facebook": {
+        "APP": {
+            "client_id": config("FACEBOOK_CLIENT_ID"),
+            "secret": config("FACEBOOK_SECRET_KEY"),
+            "key": "",
+        },
+        "SCOPE": [
+            "email",
+            "public_profile",
+        ],
+        "METHOD": "oauth2",
+        "VERIFIED_EMAIL": True,
+        "LOCALE_FUNC": lambda request: "en_US",
+    },
 }
