@@ -150,6 +150,13 @@ MEDIA_URL = "/report_directory/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "report_directory")
 SIGNATURES_DIRECTORY = os.path.join(MEDIA_ROOT, "signatures")
 
+# Configure for VOLATILITY
+DUMP_FILES_DIRECTORY = os.path.join(MEDIA_ROOT, "dump_files")
+VOLATILITY_PATH = os.path.join(BASE_DIR, "volatility3/vol.py")
+VOLATILITY_SYMBOLS_PATH = os.path.join(BASE_DIR, "volatility3/volatility3/symbols")
+VOLATILITY_PLUGINS_PATH = os.path.join(BASE_DIR, "volatility3/volatility3/plugins")
+
+
 # CELERY
 CELERY_BROKER_URL = "amqp://guest:guest@localhost:5672//"
 CELERY_RESULT_BACKEND = "rpc://"

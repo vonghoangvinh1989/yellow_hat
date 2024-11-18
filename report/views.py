@@ -25,6 +25,7 @@ def index(request):
             "Active Reconnaissance Reports": [],
             "Vulnerability Assessment Reports": [],
             "Enumeration Reports": [],
+            "Digital Forensic Reports": [],
             "Merge Reports": [],
             "Other Reports": [],
         }
@@ -43,6 +44,8 @@ def index(request):
                         categories["Vulnerability Assessment Reports"].append(file_name)
                     elif file_name.startswith("enumeration_"):
                         categories["Enumeration Reports"].append(file_name)
+                    elif file_name.startswith("digital_forensic_"):
+                        categories["Digital Forensic Reports"].append(file_name)
                     elif file_name.startswith("merge_"):
                         categories["Merge Reports"].append(file_name)
                     else:

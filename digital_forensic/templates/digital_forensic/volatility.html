@@ -2,23 +2,208 @@
 
 {% load static %}
 
-{% block title %}Volatility Tool Page{% endblock %}
+{% block title %}Volatility Memory Analysis{% endblock %}
+
 {% block site_css %}
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tabulator/4.9.3/css/bootstrap/tabulator_bootstrap4.min.css" rel="stylesheet">
     <link href="https://unpkg.com/tabulator-tables/dist/css/tabulator.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'active_recon/styles/active_recon.css' %}">
+    <link rel="stylesheet" href="{% static 'passive_recon/styles/passive_recon.css' %}">
 {% endblock %}
 
 {% block main_heading %}
-    Volatility
+    Volatility Memory Analysis
 {% endblock %}
 
 {% block body %}
-    
+    <section>
+        <h2>Upload Memory Dump</h2>
+        <div class="container">
+            <form id="memory-dump-form" name="memory-dump-form" method="POST" enctype="multipart/form-data" class="row align-items-center">
+                {% csrf_token %}
+                <div class="col-auto">
+                    <label for="memory-dump" class="visually-hidden">Memory Dump</label>
+                    <input type="file" class="form-control" name="memory-dump" id="memory-dump" required>
+                </div>
+                <div class="col-auto">
+                    <label for="plugin-select" class="visually-hidden">Select Plugin</label>
+                    <select class="form-control" name="plugin" id="plugin-select" required>
+                        <option value="windows.info.Info">Windows Info</option>
+                        <option value="windows.pslist.PsList">Windows Pslist</option>
+                        <option value="windows.pstree.PsTree">Windows Pstree</option>
+                        <option value="windows.cachedump.Cachedump">Windows Cachedump</option>
+                        <option value="windows.cmdline.CmdLine">Windows CmdLine</option>
+                        <option value="windows.cmdscan.CmdScan">Windows CmdScan</option>
+                        <option value="windows.consoles.Consoles">Windows Consoles</option>
+                        <option value="windows.crashinfo.Crashinfo">Windows Crashinfo</option>
+                        <option value="windows.dlllist.DllList">Windows DllList</option>
+                        <option value="windows.driverscan.DriverScan">Windows DriverScan</option>
+                        <option value="windows.hashdump.Hashdump">Windows Hashdump</option>
+                        <option value="windows.netscan.NetScan">Windows NetScan</option>
+                        <option value="windows.privileges.Privs">Windows Privs</option>
+                        <option value="windows.psxview.PsXView">Windows PsXView</option>
+                        <option value="windows.malfind.Malfind">Windows Malfind</option>
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <button id="upload-button" type="submit" class="btn btn-primary">Upload and Analyze</button>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <section class="hidden progress-section" id="progress-section">
+        <div class="container">
+            <div class="progress">
+                <div id="progress-bar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 100%">
+                    <span class="progress-bar-text">It could take minutes to process. Please be patient...</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="hidden" id="output-section">
+        <div class="container">
+            <div class="row align-items-center mb-3">
+                <div class="col-auto">
+                    <h2 class="mb-0">Analysis Result</h2>
+                </div>
+                <div class="col-auto">
+                    <button id="download-button" class="btn btn-success">Download</button>
+                </div>
+                <div class="col-auto">
+                    <button id="save-report-button" class="btn btn-success">Save Report</button>
+                </div>
+            </div>
+            <blockquote class="blockquote p-3 border border-primary rounded">
+                <pre id="analysis-result"></pre>
+            </blockquote>
+        </div>
+    </section>
 {% endblock %}
 
 {% block script_js %}
-    <script src="https://unpkg.com/tabulator-tables/dist/js/tabulator.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.core.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.3.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.13/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    {% include 'report/includes/report-name.html' %}
+
+    <script>
+        $(document).ready(function() {
+            // select download button
+            let downloadButton = $('#download-button');
+
+            // select save report button
+            let saveReportButton = $('#save-report-button');
+
+            // get the passive tool name from backend
+            let digitalToolName = `digital_forensic_{{ digital_tool.name }}`;
+
+            // generate report pdf file name
+            let pdfReportFileName = generateReportName(digitalToolName)
+
+            // handle for download button
+            downloadButton.on('click', function() {
+                let element = document.getElementById('analysis-result');
+                let opt = {
+                    margin:       1,
+                    filename:     `${pdfReportFileName}.pdf`,
+                    image:        { type: 'jpeg', quality: 0.98 },
+                    html2canvas:  { scale: 2 },
+                    jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+                };
+
+                // New Promise-based usage:
+                html2pdf().set(opt).from(element).save();
+            });
+
+            // generate pop-up
+            let successPopUp = new Popup({
+                id: `${pdfReportFileName}`,
+                title: "Report Saved Successfully",
+                content: `A file with name <strong>${pdfReportFileName}.pdf</strong> was generated successfully.`,
+            });
+
+
+            // handle save repport button
+            saveReportButton.on('click', function() {
+                let element = document.getElementById('analysis-result');
+                let opt = {
+                    margin:       1,
+                    filename:     `${pdfReportFileName}.pdf`,
+                    image:        { type: 'jpeg', quality: 0.98 },
+                    html2canvas:  { scale: 2 },
+                    jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+                };
+
+                html2pdf().set(opt).from(element).output('blob').then(function(pdfBlob) {
+                    let formData = new FormData();
+                    formData.append('pdf', pdfBlob, `${pdfReportFileName}.pdf`);
+                    formData.append('csrfmiddlewaretoken', $('input[name=csrfmiddlewaretoken]').val());
+
+                    $.ajax({
+                        type: 'POST',
+                        url: "{% url 'save-report' %}",
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        success: function(response, textStatus, jqXHR) {
+                            if (jqXHR.status === 200) {
+                                successPopUp.show(); // Show success popup
+                            } else {
+                                alert('Error saving PDF file');
+                            }
+                        },
+                        error: function(error) {
+                            console.log('Error during saving report: ', error);
+                            alert('An error occurred while saving the report. Please try again.');
+                        }
+                    });
+                });
+            });
+
+
+            $('#memory-dump-form').on('submit', function(event) {
+                event.preventDefault();
+
+                let formData = new FormData(this);
+                let outputSection = $('#output-section');
+                let analysisResult = $('#analysis-result');
+
+                let progressSection = $('#progress-section');
+                let uploadButton = $('#upload-button');
+
+                outputSection.hide();
+                uploadButton.prop('disabled', true);
+                progressSection.show();
+
+                $.ajax({
+                    type: 'POST',
+                    url: "{% url 'digital-forensic-tools' digital_tool.slug %}",
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function(response) {
+                        if (response.result) {
+                            analysisResult.text(response.result);
+                        } else {
+                            console.log(response.error)
+                        }
+                        
+                        progressSection.hide();
+                        outputSection.show();
+                        uploadButton.prop('disabled', false);
+                    },
+                    error: function(error) {
+                        console.error('Error during analysis:', error);
+                        analysisResult.text('An error occurred during the analysis. Please try again.');
+                        
+                        progressSection.hide();
+                        outputSection.show();
+                        uploadButton.prop('disabled', false);
+                    }
+                });
+
+            });
+        });
+    </script>
 {% endblock %}

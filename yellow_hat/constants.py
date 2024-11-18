@@ -4,6 +4,7 @@ NORMAL_CATEGORIES = [
     "Active Reconnaissance Reports",
     "Vulnerability Assessment Reports",
     "Enumeration Reports",
+    "Digital Forensic Reports",
     "Other Reports",
 ]
 
