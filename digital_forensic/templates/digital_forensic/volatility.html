@@ -31,24 +31,28 @@
                         <option value="windows.info.Info">Windows Info</option>
                         <option value="windows.pslist.PsList">Windows Pslist</option>
                         <option value="windows.pstree.PsTree">Windows Pstree</option>
-                        <option value="windows.cachedump.Cachedump">Windows Cachedump</option>
+                        <option value="windows.psscan.PsScan">Windows PsScan</option>
                         <option value="windows.cmdline.CmdLine">Windows CmdLine</option>
-                        <option value="windows.cmdscan.CmdScan">Windows CmdScan</option>
-                        <option value="windows.consoles.Consoles">Windows Consoles</option>
-                        <option value="windows.crashinfo.Crashinfo">Windows Crashinfo</option>
                         <option value="windows.dlllist.DllList">Windows DllList</option>
                         <option value="windows.driverscan.DriverScan">Windows DriverScan</option>
-                        <option value="windows.hashdump.Hashdump">Windows Hashdump</option>
+                        <option value="windows.filescan.FileScan">Windows FileScan</option>
                         <option value="windows.netscan.NetScan">Windows NetScan</option>
                         <option value="windows.privileges.Privs">Windows Privs</option>
                         <option value="windows.psxview.PsXView">Windows PsXView</option>
                         <option value="windows.malfind.Malfind">Windows Malfind</option>
+                        <option value="windows.getsids.GetSIDs">Windows GetSIDs</option>
+                        <option value="windows.registry.hivelist.HiveList">Windows Registry HiveList</option>
+                        <option value="windows.registry.userassist.UserAssist">Windows Registry UserAssist</option>
+                        <option value="windows.registry.printkey">Windows Registry PrintKey</option>
                     </select>
                 </div>
                 <div class="col-auto">
                     <button id="upload-button" type="submit" class="btn btn-primary">Upload and Analyze</button>
                 </div>
             </form>
+            <div class="col-auto mt-3">
+                <p id="plugin-description" class="border p-3 rounded"></p>
+            </div>
         </div>
     </section>
 
@@ -75,6 +79,9 @@
                     <button id="save-report-button" class="btn btn-success">Save Report</button>
                 </div>
             </div>
+            <div class="col-auto">
+                <input type="text" id="filter-input" class="form-control" placeholder="Filter results">
+            </div>
             <blockquote class="blockquote p-3 border border-primary rounded">
                 <pre id="analysis-result"></pre>
             </blockquote>
@@ -83,7 +90,8 @@
 {% endblock %}
 
 {% block script_js %}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.68/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.68/vfs_fonts.js"></script>
 
     {% include 'report/includes/report-name.html' %}
 
@@ -103,17 +111,21 @@
 
             // handle for download button
             downloadButton.on('click', function() {
-                let element = document.getElementById('analysis-result');
-                let opt = {
-                    margin:       1,
-                    filename:     `${pdfReportFileName}.pdf`,
-                    image:        { type: 'jpeg', quality: 0.98 },
-                    html2canvas:  { scale: 2 },
-                    jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+                let content = document.getElementById('analysis-result').innerText;
+
+                let docDefinition = {
+                    content: [
+                        { text: 'Volatility Memory Analysis Result', style: 'header' },
+                        { text: content, style: 'body' },
+                    ],
+                    styles: {
+                        header: { fontSize: 18, bold: true, margin: [0, 0, 0, 10] },
+                        body: { fontSize: 12, margin: [0, 0, 0, 10] },
+                    }
                 };
 
-                // New Promise-based usage:
-                html2pdf().set(opt).from(element).save();
+                // Create and download the PDF
+                pdfMake.createPdf(docDefinition).download(`${pdfReportFileName}`);
             });
 
             // generate pop-up
@@ -127,18 +139,24 @@
             // handle save repport button
             saveReportButton.on('click', function() {
                 let element = document.getElementById('analysis-result');
-                let opt = {
-                    margin:       1,
-                    filename:     `${pdfReportFileName}.pdf`,
-                    image:        { type: 'jpeg', quality: 0.98 },
-                    html2canvas:  { scale: 2 },
-                    jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
-                };
+                let content = element.innerText;
 
-                html2pdf().set(opt).from(element).output('blob').then(function(pdfBlob) {
+                let docDefinition = {
+                    content: [
+                        { text: 'Volatility Memory Analysis Result', style: 'header' },
+                        { text: content, style: 'body' },
+                    ],
+                    styles: {
+                        header: { fontSize: 18, bold: true, margin: [0, 0, 0, 10] },
+                        body: { fontSize: 12, margin: [0, 0, 0, 10] },
+                    },
+                    pageMargins: [15, 15, 15, 15] // Set margins
+                };
+                
+                pdfMake.createPdf(docDefinition).getBlob(function(pdfBlob) {
                     let formData = new FormData();
                     formData.append('pdf', pdfBlob, `${pdfReportFileName}.pdf`);
-                    formData.append('csrfmiddlewaretoken', $('input[name=csrfmiddlewaretoken]').val());
+                    formData.append('csrfmiddlewaretoken', document.querySelector('input[name=csrfmiddlewaretoken]').value);
 
                     $.ajax({
                         type: 'POST',
@@ -148,7 +166,7 @@
                         contentType: false,
                         success: function(response, textStatus, jqXHR) {
                             if (jqXHR.status === 200) {
-                                successPopUp.show(); // Show success popup
+                                successPopUp.show();
                             } else {
                                 alert('Error saving PDF file');
                             }
@@ -159,7 +177,7 @@
                         }
                     });
                 });
-            });
+            }); // end save button
 
 
             $('#memory-dump-form').on('submit', function(event) {
@@ -202,8 +220,61 @@
                         uploadButton.prop('disabled', false);
                     }
                 });
+            }); // end function
 
+            // handle filter input event
+            $('#filter-input').on('input', function() {
+                let filterText = $(this).val().toLowerCase();
+                let analysisResult = $('#analysis-result').data('originalContent') || $('#analysis-result').text();
+                
+                if (!$('#analysis-result').data('originalContent')) {
+                    $('#analysis-result').data('originalContent', analysisResult);
+                }
+                
+                let filteredResult = '';
+
+                if (filterText) {
+                    let lines = analysisResult.split('\n');
+                    filteredResult = lines.filter(line => line.toLowerCase().includes(filterText)).join('\n');
+                } else {
+                    filteredResult = analysisResult;
+                }
+
+                $('#analysis-result').text(filteredResult);
             });
+
+            // handle update plugin description
+            const pluginDescriptions = {
+                "windows.info.Info": "Displays general information about the memory image.",
+                "windows.pslist.PsList": "Lists the processes in memory.",
+                "windows.pstree.PsTree": "Displays a tree of processes in memory.",
+                "windows.psscan.PsScan": "Scans for process objects in memory.",
+                "windows.cmdline.CmdLine": "Shows the command line arguments for processes.",
+                "windows.dlllist.DllList": "Lists loaded DLLs for each process.",
+                "windows.driverscan.DriverScan": "Scans for drivers in memory.",
+                "windows.filescan.FileScan": "Scans for file objects in memory.",
+                "windows.netscan.NetScan": "Scans for network connections.",
+                "windows.privileges.Privs": "Lists privileges for processes.",
+                "windows.psxview.PsXView": "Shows processes from multiple views.",
+                "windows.malfind.Malfind": "Finds injected code and hooks in memory.",
+                "windows.getsids.GetSIDs": "Lists SIDs for processes.",
+                "windows.registry.hivelist.HiveList": "Lists registry hives in memory.",
+                "windows.registry.userassist.UserAssist": "Shows UserAssist registry keys.",
+                "windows.registry.printkey": "Prints registry keys and values. Use this to explore registry keys like 'Software\\Microsoft\\Windows\\CurrentVersion'."
+            };
+
+            const pluginSelect = document.getElementById('plugin-select');
+            const pluginDescription = document.getElementById('plugin-description');
+
+            function updateDescription() {
+                const selectedPlugin = pluginSelect.value;
+                pluginDescription.textContent = pluginDescriptions[selectedPlugin] || "Select a plugin to see its description.";
+            }
+
+            pluginSelect.addEventListener('change', updateDescription);
+
+            // Initialize the description on page load
+            updateDescription();
         });
     </script>
 {% endblock %}

@@ -1,6 +1,7 @@
 {% include 'report/includes/report-name.html' %}
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.68/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.68/vfs_fonts.js"></script>
 
 <script type="text/javascript">
     $(document).ready(function() {
@@ -18,18 +19,23 @@
 
         // handle for download button
         downloadButton.on('click', function() {
-            let element = document.getElementById('scanning-result');
-            let opt = {
-                margin:       1,
-                filename:     `${pdfReportFileName}.pdf`,
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2 },
-                jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+            let content = document.getElementById('scanning-result').innerText;
+
+            let docDefinition = {
+                content: [
+                    { text: 'Passive Reconnaissance Scanning Result', style: 'header' },
+                    { text: content, style: 'body' },
+                ],
+                styles: {
+                    header: { fontSize: 18, bold: true, margin: [0, 0, 0, 10] },
+                    body: { fontSize: 12, margin: [0, 0, 0, 10] },
+                }
             };
 
-            // New Promise-based usage:
-            html2pdf().set(opt).from(element).save();
+            // Create and download the PDF
+            pdfMake.createPdf(docDefinition).download(`${pdfReportFileName}`);
         });
+        
 
         // generate pop-up
         let successPopUp = new Popup({
@@ -42,18 +48,24 @@
         // handle save repport button
         saveReportButton.on('click', function() {
             let element = document.getElementById('scanning-result');
-            let opt = {
-                margin:       1,
-                filename:     `${pdfReportFileName}.pdf`,
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2 },
-                jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+            let content = element.innerText;
+
+            let docDefinition = {
+                content: [
+                    { text: 'Passive Reconnaissance Scanning Result', style: 'header' },
+                    { text: content, style: 'body' },
+                ],
+                styles: {
+                    header: { fontSize: 18, bold: true, margin: [0, 0, 0, 10] },
+                    body: { fontSize: 12, margin: [0, 0, 0, 10] },
+                },
+                pageMargins: [15, 15, 15, 15] // Set margins
             };
 
-            html2pdf().set(opt).from(element).output('blob').then(function(pdfBlob) {
+            pdfMake.createPdf(docDefinition).getBlob(function(pdfBlob) {
                 let formData = new FormData();
                 formData.append('pdf', pdfBlob, `${pdfReportFileName}.pdf`);
-                formData.append('csrfmiddlewaretoken', $('input[name=csrfmiddlewaretoken]').val());
+                formData.append('csrfmiddlewaretoken', document.querySelector('input[name=csrfmiddlewaretoken]').value);
 
                 $.ajax({
                     type: 'POST',
@@ -63,7 +75,7 @@
                     contentType: false,
                     success: function(response, textStatus, jqXHR) {
                         if (jqXHR.status === 200) {
-                            successPopUp.show(); // Show success popup
+                            successPopUp.show();
                         } else {
                             alert('Error saving PDF file');
                         }
@@ -74,7 +86,7 @@
                     }
                 });
             });
-        });
+        }); // end save button function
 
         $('#scan-form').on('submit', function(event) {
             event.preventDefault();
@@ -124,6 +136,27 @@
                     scanButton.prop('disabled', false);
                 }
             });
+        }); // end function
+
+        // handle filter input event
+        $('#filter-input').on('input', function() {
+            let filterText = $(this).val().toLowerCase();
+            let scanningResult = $('#scanning-result').data('originalContent') || $('#scanning-result').text();
+            
+            if (!$('#scanning-result').data('originalContent')) {
+                $('#scanning-result').data('originalContent', scanningResult);
+            }
+            
+            let filteredResult = '';
+
+            if (filterText) {
+                let lines = scanningResult.split('\n');
+                filteredResult = lines.filter(line => line.toLowerCase().includes(filterText)).join('\n');
+            } else {
+                filteredResult = scanningResult;
+            }
+
+            $('#scanning-result').text(filteredResult);
         });
     });
 </script>

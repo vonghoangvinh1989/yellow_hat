@@ -56,6 +56,7 @@ def passive_recon_tools(request, passive_tool_slug):
                             target_domain
                         )
                     except Exception as err:
+                        scanning_nslookup_result = ""
                         error_message = str(err)
 
                     response_data = {
@@ -69,6 +70,7 @@ def passive_recon_tools(request, passive_tool_slug):
                     try:
                         scanning_whois_result = whois_utils.scan_whois(target_domain)
                     except Exception as err:
+                        scanning_whois_result = ""
                         error_message = str(err)
 
                     response_data = {

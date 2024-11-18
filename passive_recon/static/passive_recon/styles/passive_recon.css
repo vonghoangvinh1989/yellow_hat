@@ -41,3 +41,9 @@ blockquote pre {
     margin: 0; /* Remove margin from pre */
     font-size: 1em; /* Set font size for the scanning result */
 }
+
+pre {
+    white-space: pre-wrap;       /* Wraps the content */
+    overflow-x: auto;            /* Adds horizontal scrollbar if needed */
+    word-wrap: break-word;       /* Breaks long words to fit within the container */
+}

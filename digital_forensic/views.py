@@ -51,20 +51,35 @@ def digital_forensic_tools(request, forensic_tool_slug):
 
             print(f"volatility_plugin is {volatility_plugin}")
 
-            command = [
-                "python",
-                settings.VOLATILITY_PATH,
-                "-f",
-                dump_file_path,
-                "--plugin-dirs",
-                settings.VOLATILITY_PLUGINS_PATH,
-                "--symbol-dir",
-                settings.VOLATILITY_SYMBOLS_PATH,
-                volatility_plugin,
-            ]
+            if volatility_plugin == "windows.registry.printkey":
+                command = [
+                    "python",
+                    settings.VOLATILITY_PATH,
+                    "-f",
+                    dump_file_path,
+                    "--plugin-dirs",
+                    settings.VOLATILITY_PLUGINS_PATH,
+                    "--symbol-dir",
+                    settings.VOLATILITY_SYMBOLS_PATH,
+                    volatility_plugin,
+                    "--key",
+                    "Software\\Microsoft\\Windows\\CurrentVersion",
+                    "--recurse",
+                ]
+            else:
+                command = [
+                    "python",
+                    settings.VOLATILITY_PATH,
+                    "-f",
+                    dump_file_path,
+                    "--plugin-dirs",
+                    settings.VOLATILITY_PLUGINS_PATH,
+                    "--symbol-dir",
+                    settings.VOLATILITY_SYMBOLS_PATH,
+                    volatility_plugin,
+                ]
 
             try:
-                print("go here mean running subprocess")
                 result = subprocess.run(
                     command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
                 )
