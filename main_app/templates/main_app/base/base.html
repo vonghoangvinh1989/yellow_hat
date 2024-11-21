@@ -64,13 +64,8 @@
                 {% include 'main_app/includes/active-tool.html' %}
                 {% include 'main_app/includes/vulnerability-tool.html' %}
                 {% include 'main_app/includes/enumeration-tool.html' %}
-                
-                <li>
-                    <a href="#" onclick="showSection('exploit')">Exploit</a>
-                    <ul class="dropdown">
-                        <li><a href="#">Metasploit</a></li>
-                    </ul>
-                </li>
+                {% include 'main_app/includes/exploitation-tool.html' %}
+               
                 <li>
                     <a href="#" onclick="showSection('post-exploit')">Post-Exploit</a>
                     <ul class="dropdown">

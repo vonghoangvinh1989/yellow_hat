@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "active_recon",
     "vulnerability_assessment",
     "enumeration",
+    "exploitation",
     "report",
     "planning",
     "allauth",

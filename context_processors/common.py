@@ -5,6 +5,7 @@ from vulnerability_assessment.utils.vulnerability_assessment_tools import (
 )
 from enumeration.utils.enumeration_tools import get_enumeration_tools
 from digital_forensic.utils.digital_forensic_tools import get_digital_forensic_tools
+from exploitation.utils.exploitation_tools import get_exploitation_tools
 
 
 def common_context(request):
@@ -14,4 +15,5 @@ def common_context(request):
         "vulnerability_assessment_tools": get_vulnerability_assessment_tools(),
         "enumeration_tools": get_enumeration_tools(),
         "digital_forensic_tools": get_digital_forensic_tools(),
+        "exploitation_tools": get_exploitation_tools(),
     }

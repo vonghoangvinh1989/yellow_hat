@@ -51,3 +51,6 @@ JOB_CHOICES = [
 
 # For digital forensic tool
 VOLATILITY = ["volatility"]
+
+# For exploitation
+NMAP_SMB_BRUTE = ["nmap-smb-brute", "nmap smb-brute"]
