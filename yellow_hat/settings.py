@@ -161,6 +161,8 @@ VOLATILITY_PATH = os.path.join(BASE_DIR, "volatility3/vol.py")
 VOLATILITY_SYMBOLS_PATH = os.path.join(BASE_DIR, "volatility3/volatility3/symbols")
 VOLATILITY_PLUGINS_PATH = os.path.join(BASE_DIR, "volatility3/volatility3/plugins")
 
+# Configure for RUNNING_SCRIPTS
+RUNNING_SCRIPTS_DIRECTORY = os.path.join(BASE_DIR, "running_scripts")
 
 # CELERY
 CELERY_BROKER_URL = "amqp://guest:guest@localhost:5672//"

@@ -55,3 +55,6 @@ VOLATILITY = ["volatility"]
 # For exploitation
 NMAP_SMB_BRUTE = ["nmap-smb-brute", "nmap smb-brute"]
 PARAMIKO_SSH_BRUTE = ["paramiko-ssh-brute", "Paramiko SSH Brute", "paramiko ssh brute"]
+
+# For post exploitation
+LINPEAS = ["linpeas"]
