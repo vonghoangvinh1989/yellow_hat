@@ -32,6 +32,7 @@ urlpatterns = [
     path("vulnerability-assessment/", include("vulnerability_assessment.urls")),
     path("enumeration/", include("enumeration.urls")),
     path("exploitation/", include("exploitation.urls")),
+    path("post-exploitation/", include("post_exploitation.urls")),
     path("digital-forensic/", include("digital_forensic.urls")),
     path("report/", include("report.urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

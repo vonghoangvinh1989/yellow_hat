@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     "vulnerability_assessment",
     "enumeration",
     "exploitation",
+    "post_exploitation",
     "report",
     "planning",
     "allauth",
@@ -150,6 +151,9 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 MEDIA_URL = "/report_directory/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "report_directory")
 SIGNATURES_DIRECTORY = os.path.join(MEDIA_ROOT, "signatures")
+
+# Configure for directory stored all brute-force files such as usernames and passwords list samples
+BRUTE_FORCE_DIRECTORY = os.path.join(MEDIA_ROOT, "brute_force_files")
 
 # Configure for VOLATILITY
 DUMP_FILES_DIRECTORY = os.path.join(MEDIA_ROOT, "dump_files")
