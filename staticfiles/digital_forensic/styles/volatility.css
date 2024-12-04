@@ -1,0 +1,42 @@
+#output-section {
+    margin-top: 20px;
+}
+
+.progress-section {
+    margin-top: 20px;
+}
+
+.hidden {
+    display: none;
+}
+
+blockquote {
+    background-color: #1e1e1e; /* Dark background */
+    border-left: 5px solid #00ff00; /* Neon green border on the left */
+    border-radius: 4px;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.5); /* Green glow effect */
+    padding: 20px; /* Padding inside the blockquote */
+    margin: 20px 0; /* Space above and below */
+    color: #00ff00; /* Neon green text color */
+    font-family: 'Courier New', Courier, monospace; /* Monospaced font for hacker vibe */
+    position: relative; /* For pseudo-elements positioning */
+    overflow: hidden; /* Hide overflow for a cleaner look */
+}
+
+blockquote::before {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-size: 0.8em;
+    color: rgba(255, 255, 255, 0.7); /* Light white text for label */
+    text-transform: uppercase; /* Uppercase label for emphasis */
+}
+
+blockquote pre {
+    background: none; /* Make pre background transparent */
+    color: inherit; /* Use inherited color */
+    white-space: pre-wrap; /* Preserve whitespace */
+    overflow-wrap: break-word; /* Allow long words to break */
+    margin: 0; /* Remove margin from pre */
+    font-size: 1em; /* Set font size for the scanning result */
+}
