@@ -11,6 +11,12 @@ def insert_initial_data(apps, schema_editor):
         description="Volatility is an open-source memory forensics framework used in Malware analysis and Incident Response. This framework is CLI-based and is programmed in Python. It is supported on Windows, Linux, and MacOS. When security breaches occur on endpoints, there usually is a footprint left by the perpetrator. Many attackers seem successful clearing any traces they may have left behind by clearing any system logs, using LOLBins, and clearing any network trace they may have left behind. This is where memory forensics comes in.",
     )
 
+    DigitalForensicTool.objects.create(
+        slug="regipy",
+        name="regipy",
+        description="Regipy is a python library for parsing offline registry hives",
+    )
+
 
 class Migration(migrations.Migration):
 

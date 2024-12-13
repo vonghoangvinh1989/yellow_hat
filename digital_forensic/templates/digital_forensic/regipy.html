@@ -1,0 +1,283 @@
+{% extends 'main_app/base/base.html' %}
+
+{% load static %}
+
+{% block title %}Windows Registry Analysis{% endblock %}
+
+{% block site_css %}
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tabulator/4.9.3/css/bootstrap/tabulator_bootstrap4.min.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/1.11.4/css/jquery.dataTables.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'active_recon/styles/active_recon.css' %}">
+    <link rel="stylesheet" href="{% static 'passive_recon/styles/passive_recon.css' %}">
+    <style>
+        .dataTables_wrapper {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table.dataTable {
+            width: 100%;
+            background-color: #2b2b2b; /* Dark background for the whole table */
+            color: #90ee90; /* Light green text color */
+        }
+
+        table.dataTable thead th, table.dataTable tfoot th {
+            white-space: nowrap;
+            background-color: #3b3b3b; /* Dark background for header */
+            color: #90ee90; /* Light green text color */
+            font-weight: normal; /* Ensure the header text is not bold */
+        }
+
+        table.dataTable tbody td {
+            background-color: #2b2b2b; /* Dark background for table cells */
+            color: #90ee90; /* Light green text color */
+            white-space: nowrap;
+        }
+
+        /* Add dark background to DataTable controls */
+        .dataTables_wrapper .dataTables_filter input,
+        .dataTables_wrapper .dataTables_length select,
+        .dataTables_wrapper .dataTables_info,
+        .dataTables_wrapper .dataTables_paginate {
+            background-color: #3b3b3b; /* Dark background for controls */
+            color: #90ee90; /* Light green text color */
+        }
+
+        /* Style for the labels in the DataTable */
+        .dataTables_wrapper label {
+            color: #90ee90; /* Light green text color */
+        }
+
+        /* Fix for sorting_1 column background */
+        .sorting_1 {
+            background-color: #2b2b2b !important; /* Ensure sorting column has dark background */
+            color: #90ee90 !important; /* Light green text color */
+        }
+
+        /* Hover effect to highlight rows */
+        table.dataTable tbody tr:hover {
+            background-color: #444; /* Darker shade on hover for rows */
+        }
+    </style>
+{% endblock %}
+
+{% block main_heading %}
+    Ethical Hacking Web Application
+{% endblock %}
+
+{% block body %}
+    <section>
+        <h2>Upload Registry File</h2>
+        <div class="container">
+            <form id="upload-registry-form" name="upload-registry-form" method="POST" enctype="multipart/form-data" class="row align-items-center">
+                {% csrf_token %}
+                <div class="col-auto">
+                    <label for="registry-dump" class="visually-hidden">Registry Dump</label>
+                    <input type="file" class="form-control" name="registry-dump" id="registry-dump" required>
+                </div>
+                <div class="col-auto">
+                    <button id="upload-button" type="submit" class="btn btn-primary">Upload and Analyze</button>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <section class="hidden progress-section" id="progress-section">
+        <div class="container">
+            <div class="progress">
+                <div id="progress-bar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 100%">
+                    <span class="progress-bar-text">It could take minutes to process. Please be patient...</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="hidden" id="output-section">
+        <div class="container">
+            <div class="row align-items-center mb-3">
+                <div class="col-auto">
+                    <h2 class="mb-0">Analysis Result</h2>
+                </div>
+                <div class="col-auto">
+                    <button id="download-button" class="btn btn-success">Download</button>
+                </div>
+                <div class="col-auto">
+                    <button id="save-report-button" class="btn btn-success">Save Report</button>
+                </div>
+            </div>
+            <blockquote class="blockquote p-3 border border-primary rounded">
+                <table id="result-table" class="display" style="width:100%">
+                    <thead>
+                        <tr></tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </blockquote>
+        </div>
+    </section>
+{% endblock %}
+
+{% block script_js %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.68/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.68/vfs_fonts.js"></script>
+    <script src="https://cdn.datatables.net/1.11.4/js/jquery.dataTables.min.js"></script>
+
+    {% include 'report/includes/report-name.html' %}
+
+    <script>
+        $(document).ready(function() {
+            // select download button
+            let downloadButton = $('#download-button');
+
+            // select save report button
+            let saveReportButton = $('#save-report-button');
+
+            // get the passive tool name from backend
+            let digitalToolName = `digital_forensic_{{ digital_tool.name }}`;
+
+            // generate report pdf file name
+            let pdfReportFileName = generateReportName(digitalToolName)
+            
+            // handle for download button
+            downloadButton.on('click', function() {
+                let content = document.getElementById('result-table').innerText;
+
+                let docDefinition = {
+                    content: [
+                        { text: 'Registry Reading Result', style: 'header' },
+                        { text: content, style: 'body' },
+                    ],
+                    styles: {
+                        header: { fontSize: 18, bold: true, margin: [0, 0, 0, 10] },
+                        body: { fontSize: 12, margin: [0, 0, 0, 10] },
+                    }
+                };
+
+                // Create and download the PDF
+                pdfMake.createPdf(docDefinition).download(`${pdfReportFileName}`);
+            });
+
+            // generate pop-up
+            let successPopUp = new Popup({
+                id: `${pdfReportFileName}`,
+                title: "Report Saved Successfully",
+                content: `A file with name <strong>${pdfReportFileName}.pdf</strong> was generated successfully.`,
+            });
+
+
+            // handle save repport button
+            saveReportButton.on('click', function() {
+                let element = document.getElementById('result-table');
+                let content = element.innerText;
+
+                let docDefinition = {
+                    content: [
+                        { text: 'Registry Reading Result', style: 'header' },
+                        { text: content, style: 'body' },
+                    ],
+                    styles: {
+                        header: { fontSize: 18, bold: true, margin: [0, 0, 0, 10] },
+                        body: { fontSize: 12, margin: [0, 0, 0, 10] },
+                    },
+                    pageMargins: [15, 15, 15, 15] // Set margins
+                };
+                
+                pdfMake.createPdf(docDefinition).getBlob(function(pdfBlob) {
+                    let formData = new FormData();
+                    formData.append('pdf', pdfBlob, `${pdfReportFileName}.pdf`);
+                    formData.append('csrfmiddlewaretoken', document.querySelector('input[name=csrfmiddlewaretoken]').value);
+
+                    $.ajax({
+                        type: 'POST',
+                        url: "{% url 'save-report' %}",
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        success: function(response, textStatus, jqXHR) {
+                            if (jqXHR.status === 200) {
+                                successPopUp.show();
+                            } else {
+                                alert('Error saving PDF file');
+                            }
+                        },
+                        error: function(error) {
+                            console.log('Error during saving report: ', error);
+                            alert('An error occurred while saving the report. Please try again.');
+                        }
+                    });
+                });
+            }); // end save button
+
+
+            $('#upload-registry-form').on('submit', function(event) {
+                event.preventDefault();
+
+                let formData = new FormData(this);
+                let outputSection = $('#output-section');
+                let analysisResult = $('#analysis-result');
+
+                let progressSection = $('#progress-section');
+                let uploadButton = $('#upload-button');
+
+                outputSection.hide();
+                uploadButton.prop('disabled', true);
+                progressSection.show();
+
+                $.ajax({
+                    type: 'POST',
+                    url: "{% url 'digital-forensic-tools' digital_tool.slug %}",
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function(response) {
+                        if (response.result) {
+                            // Clear previous results
+                            analysisResult.empty();
+                            
+                            // Get table elements
+                            let table = $('#result-table');
+                            let thead = table.find('thead tr');
+                            let tbody = table.find('tbody');
+
+                            // Clear existing table data
+                            thead.empty();
+                            tbody.empty();
+
+                            // Extract headers from the first row
+                            let headers = Object.keys(response.result[0]);
+                            headers.forEach(header => {
+                                thead.append($('<th>').text(header));
+                            });
+
+                            // Populate table rows with data
+                            response.result.forEach(row => {
+                                let dataRow = $('<tr>');
+                                headers.forEach(header => {
+                                    dataRow.append($('<td>').text(row[header]));
+                                });
+                                tbody.append(dataRow);
+                            });
+
+                            // Initialize DataTable
+                            $('#result-table').DataTable();
+                        } else {
+                            analysisResult.text('No result data returned.');
+                        }
+                        
+                        progressSection.hide();
+                        outputSection.show();
+                        uploadButton.prop('disabled', false);
+                    },
+                    error: function(error) {
+                        console.error('Error during analysis:', error);
+                        analysisResult.text('An error occurred during the analysis. Please try again.');
+                        
+                        progressSection.hide();
+                        outputSection.show();
+                        uploadButton.prop('disabled', false);
+                    }
+                });
+            }); // end function
+        });
+    </script>
+{% endblock %}
